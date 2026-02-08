@@ -186,36 +186,77 @@
 
 <div class="row g-4 mb-4">
     <div class="col-md-3 col-sm-6">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-plus-circle fs-2 text-primary"></i>
-                <h6 class="mt-3 mb-0">New Transaction</h6>
+        {% if wakalas %}
+        <a href="{% url 'wakala:transaction_create' wakala_id=wakalas.0.id %}" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-plus-circle fs-2 text-primary"></i>
+                    <h6 class="mt-3 mb-0">New Transaction</h6>
+                </div>
             </div>
-        </div>
+        </a>
+        {% else %}
+        <a href="{% url 'dashboard:app_switcher' %}?tab=wakala" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-plus-circle fs-2 text-primary"></i>
+                    <h6 class="mt-3 mb-0">New Transaction</h6>
+                </div>
+            </div>
+        </a>
+        {% endif %}
     </div>
     <div class="col-md-3 col-sm-6">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-person-plus fs-2 text-success"></i>
-                <h6 class="mt-3 mb-0">Add Member</h6>
+        {% if mchezo_groups %}
+        <a href="{% url 'mchezo:add_member' group_id=mchezo_groups.0.id %}" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-plus fs-2 text-success"></i>
+                    <h6 class="mt-3 mb-0">Add Member</h6>
+                </div>
             </div>
-        </div>
+        </a>
+        {% else %}
+        <a href="{% url 'dashboard:app_switcher' %}?tab=mchezo" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-plus fs-2 text-success"></i>
+                    <h6 class="mt-3 mb-0">Add Member</h6>
+                </div>
+            </div>
+        </a>
+        {% endif %}
     </div>
     <div class="col-md-3 col-sm-6">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-file-earmark-text fs-2 text-warning"></i>
-                <h6 class="mt-3 mb-0">Generate Report</h6>
+        {% if user.is_staff %}
+        <a href="{% url 'audit:reports' %}" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-earmark-text fs-2 text-warning"></i>
+                    <h6 class="mt-3 mb-0">Generate Report</h6>
+                </div>
             </div>
-        </div>
+        </a>
+        {% else %}
+        <a href="{% url 'dashboard:app_switcher' %}" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-earmark-text fs-2 text-warning"></i>
+                    <h6 class="mt-3 mb-0">Reports</h6>
+                </div>
+            </div>
+        </a>
+        {% endif %}
     </div>
     <div class="col-md-3 col-sm-6">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-gear fs-2 text-info"></i>
-                <h6 class="mt-3 mb-0">Settings</h6>
+        <a href="{% url 'dashboard:settings' %}" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-gear fs-2 text-info"></i>
+                    <h6 class="mt-3 mb-0">Settings</h6>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 

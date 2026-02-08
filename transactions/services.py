@@ -72,7 +72,7 @@ class TransactionService:
             **kwargs
         )
         
-        txn.full_save()  # This triggers audit fields
+        txn.save()  # This triggers audit fields
         
         # Log the transaction
         AuditLogger.log_transaction(

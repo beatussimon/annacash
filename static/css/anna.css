@@ -2,6 +2,7 @@
 ANNA Platform Core Styles
 ==========================
 Professional, financial-grade styling for the ANNA platform.
+Fully responsive design for mobile, tablet, desktop, and large screens.
 */
 
 /* ==========================================================================
@@ -38,6 +39,9 @@ body {
 .anna-navbar {
   background: linear-gradient(135deg, var(--anna-primary), var(--anna-secondary));
   box-shadow: var(--anna-shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: var(--anna-z-sticky);
 }
 
 .anna-navbar-brand {
@@ -161,14 +165,6 @@ body {
   color: var(--anna-primary);
 }
 
-.anna-app-switcher-btn Wakala {
-  color: var(--anna-primary);
-}
-
-.anna-app-switcher-btn Mchezo {
-  color: var(--anna-danger);
-}
-
 /* ==========================================================================
    KPI CARDS
    ========================================================================== */
@@ -179,6 +175,7 @@ body {
   border-radius: var(--anna-radius-lg);
   padding: var(--anna-space-4);
   box-shadow: var(--anna-shadow-sm);
+  height: 100%;
 }
 
 .anna-kpi-card-header {
@@ -280,6 +277,7 @@ body {
   justify-content: center;
   margin-right: var(--anna-space-3);
   font-size: 1rem;
+  flex-shrink: 0;
 }
 
 .anna-transaction-icon-deposit {
@@ -313,6 +311,7 @@ body {
   font-weight: 600;
   font-size: 0.875rem;
   text-align: right;
+  white-space: nowrap;
 }
 
 .anna-transaction-amount-deposit {
@@ -342,6 +341,7 @@ body {
   border: 1px solid var(--anna-border);
   border-radius: var(--anna-radius-lg);
   margin-bottom: var(--anna-space-4);
+  flex-wrap: wrap;
 }
 
 .anna-day-status-item {
@@ -386,6 +386,7 @@ body {
   transition: all var(--anna-transition);
   text-decoration: none;
   color: var(--anna-text-primary);
+  height: 100%;
 }
 
 .anna-quick-action:hover {
@@ -533,15 +534,6 @@ body {
   height: 1em;
 }
 
-@keyframes anna-loading-shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
 /* ==========================================================================
    CONFIRMATION DIALOGS
    ========================================================================== */
@@ -599,35 +591,329 @@ body {
 }
 
 /* ==========================================================================
-   RESPONSIVE UTILITIES
+   PAGE HEADER
    ========================================================================== */
 
+.anna-page-header {
+  margin-bottom: var(--anna-space-4);
+}
+
+.anna-page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--anna-text-primary);
+  margin-bottom: var(--anna-space-1);
+}
+
+.anna-page-subtitle {
+  color: var(--anna-text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 0;
+}
+
+.anna-page-actions {
+  display: flex;
+  gap: var(--anna-space-2);
+  flex-wrap: wrap;
+  margin-top: var(--anna-space-3);
+}
+
+/* ==========================================================================
+   CARD SYSTEM
+   ========================================================================== */
+
+.anna-card {
+  background: var(--anna-bg-primary);
+  border: 1px solid var(--anna-border);
+  border-radius: var(--anna-radius-lg);
+  box-shadow: var(--anna-shadow-sm);
+  overflow: hidden;
+}
+
+.anna-card-header {
+  padding: var(--anna-space-4);
+  border-bottom: 1px solid var(--anna-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--anna-space-2);
+}
+
+.anna-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.anna-card-body {
+  padding: var(--anna-space-4);
+}
+
+.anna-card-footer {
+  padding: var(--anna-space-3) var(--anna-space-4);
+  border-top: 1px solid var(--anna-border);
+  background: var(--anna-bg-secondary);
+}
+
+/* ==========================================================================
+   TABLE STYLES
+   ========================================================================== */
+
+.anna-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.anna-table th,
+.anna-table td {
+  padding: var(--anna-space-3) var(--anna-space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--anna-border);
+}
+
+.anna-table th {
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--anna-text-secondary);
+  background: var(--anna-bg-secondary);
+}
+
+.anna-table tbody tr:hover {
+  background: var(--anna-bg-tertiary);
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+
+/* Extra small devices (phones, 576px and up) */
 @media (max-width: 576px) {
-  .anna-day-status {
-    flex-wrap: wrap;
+  html {
+    font-size: 14px;
   }
-  
+
+  .anna-navbar {
+    padding: var(--anna-space-2) var(--anna-space-3);
+  }
+
+  .anna-navbar-brand {
+    font-size: 1rem;
+  }
+
+  .anna-app-switcher {
+    display: none;
+  }
+
+  .anna-day-status {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--anna-space-3);
+  }
+
   .anna-day-status-divider {
     display: none;
   }
-  
+
   .anna-day-status-item {
-    width: 100%;
     justify-content: space-between;
   }
-  
+
+  .anna-transaction-item {
+    flex-wrap: wrap;
+    padding: var(--anna-space-2) var(--anna-space-3);
+  }
+
   .anna-transaction-actions {
+    display: none;
+  }
+
+  .anna-kpi-card {
+    padding: var(--anna-space-3);
+  }
+
+  .anna-kpi-value {
+    font-size: 1.5rem;
+  }
+
+  .anna-page-title {
+    font-size: 1.25rem;
+  }
+
+  .anna-empty-state {
+    padding: var(--anna-space-6);
+  }
+
+  .anna-empty-state-icon {
+    font-size: 3rem;
+  }
+
+  .container-fluid {
+    padding-left: var(--anna-space-3);
+    padding-right: var(--anna-space-3);
+  }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 768px) {
+  .anna-day-status {
+    flex-wrap: wrap;
+  }
+
+  .anna-day-status-item {
+    min-width: 45%;
+  }
+
+  .anna-day-status-divider {
     display: none;
   }
 }
 
-@media (max-width: 768px) {
-  .anna-navbar-nav {
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 992px) {
+  .anna-day-status {
     flex-wrap: wrap;
   }
-  
-  .anna-role-indicator {
-    font-size: 0.625rem;
-    padding: var(--anna-space-1) var(--anna-space-2);
+
+  .anna-day-status-item {
+    min-width: 30%;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1200px) {
+  /* Add styles for large desktops */
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .anna-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--anna-space-4);
+  }
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@keyframes anna-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes anna-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes anna-loading-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+.anna-text-center {
+  text-align: center;
+}
+
+.anna-text-right {
+  text-align: right;
+}
+
+.anna-text-muted {
+  color: var(--anna-text-secondary);
+}
+
+.anna-text-success {
+  color: var(--anna-success);
+}
+
+.anna-text-danger {
+  color: var(--anna-danger);
+}
+
+.anna-text-warning {
+  color: var(--anna-warning);
+}
+
+.anna-mb-0 {
+  margin-bottom: 0;
+}
+
+.anna-mb-2 {
+  margin-bottom: var(--anna-space-2);
+}
+
+.anna-mb-4 {
+  margin-bottom: var(--anna-space-4);
+}
+
+.anna-mt-2 {
+  margin-top: var(--anna-space-2);
+}
+
+.anna-mt-4 {
+  margin-top: var(--anna-space-4);
+}
+
+.anna-gap-2 {
+  gap: var(--anna-space-2);
+}
+
+.anna-gap-3 {
+  gap: var(--anna-space-3);
+}
+
+.anna-gap-4 {
+  gap: var(--anna-space-4);
+}
+
+/* Touch-friendly buttons for mobile */
+@media (max-width: 768px) {
+  .anna-btn {
+    min-height: 44px;
+    padding: var(--anna-space-3) var(--anna-space-4);
+  }
+
+  .anna-btn-icon {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .anna-navbar,
+  .anna-card-footer,
+  .anna-page-actions {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  .anna-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
   }
 }

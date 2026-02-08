@@ -10,6 +10,7 @@ from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.exceptions import PermissionDenied
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
 from django.db import transaction as db_transaction
@@ -163,6 +164,11 @@ class WakalaTransactionEditView(UpdateView):
     ]
     template_name = 'wakala/transaction_form.html'
     
+    def get_object(self, queryset=None):
+        """Retrieve the transaction using transaction_id from URL kwargs."""
+        transaction_id = self.kwargs.get('transaction_id')
+        return get_object_or_404(Transaction, pk=transaction_id)
+    
     def get(self, request, *args, **kwargs):
         txn = self.get_object()
         
@@ -221,6 +227,11 @@ class WakalaTransactionDeleteView(DeleteView):
     model = Transaction
     template_name = 'wakala/transaction_confirm_delete.html'
     
+    def get_object(self, queryset=None):
+        """Retrieve the transaction using transaction_id from URL kwargs."""
+        transaction_id = self.kwargs.get('transaction_id')
+        return get_object_or_404(Transaction, pk=transaction_id)
+    
     def get(self, request, *args, **kwargs):
         txn = self.get_object()
         
@@ -254,6 +265,11 @@ class WakalaDayOpenView(CreateView):
     model = FinancialDay
     fields = ['date', 'opening_balance', 'opening_balance_note']
     template_name = 'wakala/day_open.html'
+    
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        wakala_id = self.kwargs.get('wakala_id')
+        self.wakala = get_object_or_404(Wakala, pk=wakala_id)
     
     def get(self, request, wakala_id, *args, **kwargs):
         wakala = get_object_or_404(Wakala, pk=wakala_id)
@@ -309,25 +325,37 @@ class WakalaDayCloseView(UpdateView):
     fields = ['closing_balance', 'closing_balance_note']
     template_name = 'wakala/day_close.html'
     
-    def get(self, request, wakala_id, *args, **kwargs):
-        wakala = get_object_or_404(Wakala, pk=wakala_id)
-        open_day = wakala.get_open_financial_day()
-        
-        if not open_day:
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        wakala_id = self.kwargs.get('wakala_id')
+        self.wakala = get_object_or_404(Wakala, pk=wakala_id)
+        self.open_day = self.wakala.get_open_financial_day()
+    
+    def get(self, request, *args, **kwargs):
+        if not self.open_day:
             messages.error(request, "No open financial day to close.")
-            return redirect('dashboard:wakala', wakala_id=wakala.id)
+            return redirect('dashboard:wakala', wakala_id=self.wakala.id)
         
         # Check permissions
-        if not has_wakala_role(request.user, wakala, ['owner', 'manager']):
+        if not has_wakala_role(request.user, self.wakala, ['owner', 'manager']):
             messages.error(request, "You don't have permission to close days.")
-            return redirect('dashboard:wakala', wakala_id=wakala.id)
+            return redirect('dashboard:wakala', wakala_id=self.wakala.id)
         
-        self.open_day = open_day
-        self.wakala = wakala
         return super().get(request, *args, **kwargs)
     
     def get_object(self, queryset=None):
+        if not self.open_day:
+            raise PermissionDenied("No open financial day to close.")
         return self.open_day
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not self.open_day:
+            messages.error(request, "No open financial day to close.")
+            return redirect('dashboard:wakala', wakala_id=self.wakala.id)
+        if not has_wakala_role(request.user, self.wakala, ['owner', 'manager']):
+            messages.error(request, "You don't have permission to close days.")
+            return redirect('dashboard:wakala', wakala_id=self.wakala.id)
+        return super().dispatch(request, *args, **kwargs)
     
     @db_transaction.atomic
     def form_valid(self, form):

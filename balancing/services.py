@@ -60,7 +60,7 @@ class BalancingEngine:
             created_by=user,
             original_recorder=user,
         )
-        day.full_save()
+        day.save()
         
         # Log the action
         AuditLogger.log_day_open_close(

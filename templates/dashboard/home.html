@@ -4,222 +4,189 @@
 
 {% block content %}
 {# Welcome Section #}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center flex-wrap">
-                    <div>
-                        <h2 class="mb-2"><i class="bi bi-cash-stack"></i> ANNA Financial Platform</h2>
-                        <p class="text-muted mb-0">Karibu {{ user.get_full_name }}. Chagua programu unayotaka kutumia.</p>
-                    </div>
-                    <div class="mt-3 mt-md-0">
-                        <a href="{% url 'dashboard:app_switcher' %}" class="btn btn-outline-primary me-2">
-                            <i class="bi bi-grid-3x3-gap"></i> All Apps
-                        </a>
-                        <a href="{% url 'accounts:profile' %}" class="btn btn-anna">
-                            <i class="bi bi-person"></i> Profile
-                        </a>
-                    </div>
-                </div>
-            </div>
+<div class="anna-page-header">
+    <div class="d-flex justify-content-between align-items-start flex-wrap">
+        <div class="me-3">
+            <h4 class="anna-page-title">
+                <i class="bi bi-cash-stack text-primary"></i> ANNA Financial Platform
+            </h4>
+            <p class="anna-page-subtitle">Karibu {{ user.get_full_name|default:"User" }}. Chagua programu unayotaka kutumia.</p>
+        </div>
+        <div class="anna-page-actions">
+            <a href="{% url 'dashboard:app_switcher' %}" class="anna-btn anna-btn-secondary">
+                <i class="bi bi-grid-3x3-gap"></i> All Apps
+            </a>
+            <a href="{% url 'accounts:profile' %}" class="anna-btn anna-btn-primary">
+                <i class="bi bi-person"></i> Profile
+            </a>
         </div>
     </div>
 </div>
 
 {# Quick Stats #}
 {% if has_wakala_access or has_mchezo_access %}
-<div class="row g-4 mb-4">
-    <div class="col-md-3 col-sm-6">
-        <div class="card stat-card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-shop fs-1 text-primary"></i>
-                <h5 class="mt-2 mb-0">{{ wakalas|length }}</h5>
-                <p class="text-muted mb-0">Wakala</p>
+<div class="row g-3 mb-4">
+    {% if has_wakala_access %}
+    <div class="col-6 col-md-3">
+        <div class="anna-kpi-card">
+            <div class="anna-kpi-card-header">
+                <span class="anna-kpi-label">Wakala</span>
+                <div class="anna-kpi-icon anna-kpi-icon-primary">
+                    <i class="bi bi-shop"></i>
+                </div>
             </div>
+            <div class="anna-kpi-value">{{ wakalas|length }}</div>
         </div>
     </div>
-    <div class="col-md-3 col-sm-6">
-        <div class="card stat-card h-100" style="border-left-color: #e74c3c;">
-            <div class="card-body text-center">
-                <i class="bi bi-people fs-1 text-danger"></i>
-                <h5 class="mt-2 mb-0">{{ mchezo_groups|length }}</h5>
-                <p class="text-muted mb-0">Michezo</p>
+    {% endif %}
+    {% if has_mchezo_access %}
+    <div class="col-6 col-md-3">
+        <div class="anna-kpi-card">
+            <div class="anna-kpi-card-header">
+                <span class="anna-kpi-label">Mchezo</span>
+                <div class="anna-kpi-icon" style="background: #fee2e2; color: #dc2626;">
+                    <i class="bi bi-people"></i>
+                </div>
             </div>
+            <div class="anna-kpi-value">{{ mchezo_groups|length }}</div>
         </div>
     </div>
-    <div class="col-md-3 col-sm-6">
-        <div class="card stat-card h-100" style="border-left-color: #27ae60;">
-            <div class="card-body text-center">
-                <i class="bi bi-currency-dollar fs-1 text-success"></i>
-                <h5 class="mt-2 mb-0">TZS</h5>
-                <p class="text-muted mb-0">Balance</p>
+    {% endif %}
+    <div class="col-6 col-md-3">
+        <div class="anna-kpi-card">
+            <div class="anna-kpi-card-header">
+                <span class="anna-kpi-label">Notifications</span>
+                <div class="anna-kpi-icon anna-kpi-icon-warning">
+                    <i class="bi bi-bell"></i>
+                </div>
             </div>
+            <div class="anna-kpi-value">0</div>
         </div>
     </div>
-    <div class="col-md-3 col-sm-6">
-        <div class="card stat-card h-100" style="border-left-color: #9b59b6;">
-            <div class="card-body text-center">
-                <i class="bi bi-bell fs-1 text-purple"></i>
-                <h5 class="mt-2 mb-0">0</h5>
-                <p class="text-muted mb-0">Notifications</p>
+    <div class="col-6 col-md-3">
+        <div class="anna-kpi-card">
+            <div class="anna-kpi-card-header">
+                <span class="anna-kpi-label">Status</span>
+                <div class="anna-kpi-icon anna-kpi-icon-success">
+                    <i class="bi bi-check-circle"></i>
+                </div>
             </div>
+            <div class="anna-kpi-value" style="font-size: 1rem; font-weight: 600;">Active</div>
         </div>
     </div>
 </div>
 {% endif %}
 
 {# Quick Actions #}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-3 col-sm-6">
-                        {% if wakalas %}
-                        <a href="{% url 'dashboard:wakala' wakala_id=wakalas.0.id %}#transactions" class="btn btn-outline-primary w-100 py-3">
-                            <i class="bi bi-plus-circle d-block fs-4"></i>
-                            New Transaction
-                        </a>
-                        {% else %}
-                        <a href="{% url 'dashboard:app_switcher' %}" class="btn btn-outline-primary w-100 py-3">
-                            <i class="bi bi-plus-circle d-block fs-4"></i>
-                            New Transaction
-                        </a>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        {% if mchezo_groups %}
-                        <a href="{% url 'dashboard:mchezo' group_id=mchezo_groups.0.id %}" class="btn btn-outline-success w-100 py-3">
-                            <i class="bi bi-person-plus d-block fs-4"></i>
-                            Add Member
-                        </a>
-                        {% else %}
-                        <a href="{% url 'dashboard:app_switcher' %}" class="btn btn-outline-success w-100 py-3">
-                            <i class="bi bi-person-plus d-block fs-4"></i>
-                            Add Member
-                        </a>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        <a href="{% url 'dashboard:app_switcher' %}" class="btn btn-outline-warning w-100 py-3">
-                            <i class="bi bi-file-earmark-text d-block fs-4"></i>
-                            Reports
-                        </a>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        <a href="{% url 'dashboard:settings' %}" class="btn btn-outline-info w-100 py-3">
-                            <i class="bi bi-gear d-block fs-4"></i>
-                            Settings
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+{% include 'components/quick_actions.html' %}
 
 {# Apps Section #}
 {% if has_wakala_access or has_mchezo_access %}
 <div class="row g-4 mb-4">
+    <div class="col-12">
+        <h5 class="mb-3">
+            <i class="bi bi-grid-3x3-gap me-2"></i>Your Apps
+        </h5>
+    </div>
+    
     {# Wakala Cards #}
+    {% if has_wakala_access %}
     {% for wakala in wakalas %}
     <div class="col-md-6 col-lg-4">
         <a href="{% url 'dashboard:wakala' wakala_id=wakala.id %}" class="text-decoration-none">
-            <div class="card h-100 stat-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h5 class="card-title">{{ wakala.name }}</h5>
-                            <p class="card-text text-muted">{{ wakala.business_type }}</p>
+            <div class="anna-card anna-card-interactive h-100">
+                <div class="anna-card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="anna-kpi-icon anna-kpi-icon-primary me-3">
+                                <i class="bi bi-shop"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ wakala.name }}</h6>
+                                <small class="text-muted">{{ wakala.business_type }}</small>
+                            </div>
                         </div>
-                        <div class="bg-light rounded p-3">
-                            <i class="bi bi-shop fs-3 text-primary"></i>
-                        </div>
-                    </div>
-                    
-                    <hr>
-                    
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted">Wakala Management</span>
                         <span class="badge bg-success">Active</span>
                     </div>
                     
-                    <div class="mt-3">
-                        <small class="text-muted">
-                            <i class="bi bi-geo-alt"></i> {{ wakala.location|default:"Not specified" }}
-                        </small>
+                    <hr class="my-3">
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">
+                            <i class="bi bi-geo-alt me-1"></i>{{ wakala.location|default:"Not specified" }}
+                        </span>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent">
+                <div class="anna-card-footer">
                     <span class="text-primary">
-                        <i class="bi bi-arrow-right-circle"></i> Open Wakala
+                        <i class="bi bi-arrow-right-circle me-1"></i>Open Wakala
                     </span>
                 </div>
             </div>
         </a>
     </div>
     {% endfor %}
+    {% endif %}
     
-    {# Mchezo Cards #}
+    {# Mchezo Cards # has_mchezo}
+    {% if_access %}
     {% for group in mchezo_groups %}
     <div class="col-md-6 col-lg-4">
         <a href="{% url 'dashboard:mchezo' group_id=group.id %}" class="text-decoration-none">
-            <div class="card h-100 stat-card" style="border-left-color: #e74c3c;">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h5 class="card-title">{{ group.name }}</h5>
-                            <p class="card-text text-muted">Mchezo Group</p>
+            <div class="anna-card anna-card-interactive h-100" style="border-left-color: #dc2626;">
+                <div class="anna-card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="anna-kpi-icon" style="background: #fee2e2; color: #dc2626;">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ group.name }}</h6>
+                                <small class="text-muted">Mchezo Group</small>
+                            </div>
                         </div>
-                        <div class="bg-light rounded p-3">
-                            <i class="bi bi-people fs-3 text-danger"></i>
-                        </div>
-                    </div>
-                    
-                    <hr>
-                    
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted">Contribution: {{ group.contribution_amount }} TZS</span>
                         <span class="badge bg-success">Active</span>
                     </div>
                     
-                    <div class="mt-3">
-                        <small class="text-muted">
-                            <i class="bi bi-people-fill"></i> {{ group.member_count|default:0 }} Members
-                        </small>
+                    <hr class="my-3">
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">
+                            <i class="bi bi-cash me-1"></i>{% format_tzs group.contribution_amount %}
+                        </span>
+                        <span class="badge bg-secondary">
+                            <i class="bi bi-people me-1"></i>{{ group.memberships.count|default:0 }}
+                        </span>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent">
+                <div class="anna-card-footer">
                     <span class="text-danger">
-                        <i class="bi bi-arrow-right-circle"></i> Open Group
+                        <i class="bi bi-arrow-right-circle me-1"></i>Open Group
                     </span>
                 </div>
             </div>
         </a>
     </div>
     {% endfor %}
+    {% endif %}
 </div>
 {% else %}
 {# No Access Message #}
 <div class="row">
     <div class="col-md-6 offset-md-3">
-        <div class="card text-center">
-            <div class="card-body py-5">
-                <i class="bi bi-exclamation-circle text-muted fs-1"></i>
-                <h4 class="mt-3">No App Access</h4>
-                <p class="text-muted">
+        <div class="anna-card text-center">
+            <div class="anna-card-body py-5">
+                <i class="bi bi-exclamation-circle text-muted d-block fs-1 mb-3"></i>
+                <h5 class="mb-2">No App Access</h5>
+                <p class="text-muted mb-4">
                     You don't have access to any ANNA apps yet. 
                     Contact the administrator for registration.
                 </p>
-                <div class="d-flex justify-content-center gap-2 mt-4">
-                    <a href="{% url 'accounts:profile' %}" class="btn btn-anna">
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{% url 'accounts:profile' %}" class="anna-btn anna-btn-primary">
                         <i class="bi bi-person"></i> View Profile
                     </a>
-                    <a href="{% url 'accounts:logout' %}" class="btn btn-outline-secondary">
+                    <a href="{% url 'accounts:logout' %}" class="anna-btn anna-btn-secondary">
                         <i class="bi bi-box-arrow-right"></i> Logout
                     </a>
                 </div>
@@ -229,39 +196,36 @@
 </div>
 {% endif %}
 
-{# Recent Activity Section #}
-<div class="row">
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Activity</h5>
-            </div>
-            <div class="card-body">
-                <div class="list-group list-group-flush">
-                    <div class="list-group-item bg-transparent">
-                        <div class="d-flex justify-content-between">
-                            <small class="text-muted">No recent activity</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-bell"></i> Notifications</h5>
-            </div>
-            <div class="card-body">
-                <div class="list-group list-group-flush">
-                    <div class="list-group-item bg-transparent">
-                        <div class="d-flex justify-content-between">
-                            <small class="text-muted">No new notifications</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{# Footer Navigation #}
+{% if has_wakala_access or has_mchezo_access %}
+<div class="row mt-4">
+    <div class="col-12">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center flex-wrap">
+                <li class="page-item">
+                    <a class="page-link" href="/">
+                        <i class="bi bi-house"></i> Home
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'dashboard:app_switcher' %}">
+                        <i class="bi bi-grid-3x3-gap"></i> Apps
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'dashboard:settings' %}">
+                        <i class="bi bi-gear"></i> Settings
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'accounts:logout' %}">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </div>
+{% endif %}
+
 {% endblock %}
