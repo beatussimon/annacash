@@ -230,6 +230,76 @@ class Cycle(AuditableModel):
         return self.payouts_made >= self.group.memberships.filter(
             status='active'
         ).count()
+    
+    def get_current_week(self):
+        """
+        Get the current week number for this cycle based on start date.
+        
+        Returns:
+            int: Current week number (1-indexed)
+        """
+        from datetime import timedelta
+        if not self.start_date:
+            return 1
+        days_elapsed = (timezone.now().date() - self.start_date).days
+        return max(1, (days_elapsed // 7) + 1)
+    
+    def get_weeks_remaining(self, membership):
+        """
+        Get information about which weeks a member has paid for.
+        
+        Args:
+            membership: The membership to check
+            
+        Returns:
+            dict: Information about paid and remaining weeks
+        """
+        from django.db.models import Sum
+        from django.db.models.functions import Coalesce
+        
+        # Get total amount contributed per week for this member
+        contributions_by_week = membership.contributions.filter(
+            cycle=self,
+            status='completed'
+        ).values('contribution_week').annotate(
+            total=Sum('amount')
+        ).order_by('contribution_week')
+        
+        paid_weeks = {}
+        for c in contributions_by_week:
+            paid_weeks[c['contribution_week']] = float(c['total'])
+        
+        # Get current expected week (based on payouts made)
+        current_week = self.payouts_made + 1
+        total_weeks = self.group.get_member_count()
+        
+        return {
+            'paid_weeks': paid_weeks,
+            'current_week': current_week,
+            'total_weeks': total_weeks,
+            'contribution_amount': self.group.contribution_amount
+        }
+    
+    def has_completed_week_payment(self, membership, week):
+        """
+        Check if a member has fully paid for a specific week.
+        
+        Args:
+            membership: The membership to check
+            week: The week number to check
+            
+        Returns:
+            bool: True if week is fully paid
+        """
+        from django.db.models import Sum
+        
+        total_paid = membership.contributions.filter(
+            cycle=self,
+            contribution_week=week,
+            status='completed'
+        ).aggregate(total=Sum('amount'))['total'] or 0
+        
+        return float(total_paid) >= float(self.group.contribution_amount)
 
 
 class Contribution(AuditableModel):
@@ -237,6 +307,7 @@ class Contribution(AuditableModel):
     A contribution made by a member in a cycle.
     
     All contributions must be recorded manually.
+    Supports incremental payments and bulk payments for multiple weeks.
     """
     STATUS_CHOICES = [
         ('pending', 'Pending'),
@@ -264,6 +335,14 @@ class Contribution(AuditableModel):
     )
     currency = models.CharField(max_length=3, default='TZS')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='completed')
+    
+    # Week tracking for flexible payments
+    # Week 1 = first week of cycle, Week 2 = second week, etc.
+    # Can be used to pay for future weeks in advance or track incremental payments
+    contribution_week = models.PositiveIntegerField(
+        default=1,
+        help_text="Which week/period this contribution is for (1=first week, 2=second week, etc.)"
+    )
     
     # Timing
     contribution_date = models.DateField(default=timezone.now)

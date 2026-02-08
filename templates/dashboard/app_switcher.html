@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load permissions %}
 
-{% block title %}App Switcher - ANNA{% endblock %}
+{% block title %}Dashboard - ANNA{% endblock %}
 
 {% block content %}
 {# Header #}
@@ -9,14 +9,11 @@
     <div class="d-flex justify-content-between align-items-start flex-wrap">
         <div class="me-3">
             <h4 class="anna-page-title">
-                <i class="bi bi-grid-3x3-gap text-primary"></i> App Switcher
+                <i class="bi bi-grid-3x3-gap text-primary"></i> Mchezo Groups
             </h4>
-            <p class="anna-page-subtitle">Welcome {{ user.get_full_name|default:"User" }}. Select an app to continue.</p>
+            <p class="anna-page-subtitle">Karibu {{ user.get_full_name|default:"User" }}. Chagua kundi unalotaka kutumia.</p>
         </div>
         <div class="anna-page-actions">
-            <a href="/" class="anna-btn anna-btn-secondary">
-                <i class="bi bi-arrow-left"></i> Back Home
-            </a>
             <a href="{% url 'accounts:profile' %}" class="anna-btn anna-btn-primary">
                 <i class="bi bi-person"></i> Profile
             </a>
@@ -24,124 +21,9 @@
     </div>
 </div>
 
-{% if has_wakala_access or has_mchezo_access %}
-{# Quick Stats #}
-<div class="row g-3 mb-4">
-    {% if has_wakala_access %}
-    <div class="col-6 col-md-3">
-        <div class="anna-kpi-card">
-            <div class="anna-kpi-card-header">
-                <span class="anna-kpi-label">Wakala</span>
-                <div class="anna-kpi-icon anna-kpi-icon-primary">
-                    <i class="bi bi-shop"></i>
-                </div>
-            </div>
-            <div class="anna-kpi-value">{{ wakalas|length }}</div>
-        </div>
-    </div>
-    {% endif %}
-    {% if has_mchezo_access %}
-    <div class="col-6 col-md-3">
-        <div class="anna-kpi-card">
-            <div class="anna-kpi-card-header">
-                <span class="anna-kpi-label">Mchezo</span>
-                <div class="anna-kpi-icon" style="background: #fee2e2; color: #dc2626;">
-                    <i class="bi bi-people"></i>
-                </div>
-            </div>
-            <div class="anna-kpi-value">{{ mchezo_groups|length }}</div>
-        </div>
-    </div>
-    {% endif %}
-    <div class="col-6 col-md-3">
-        <div class="anna-kpi-card">
-            <div class="anna-kpi-card-header">
-                <span class="anna-kpi-label">Notifications</span>
-                <div class="anna-kpi-icon anna-kpi-icon-warning">
-                    <i class="bi bi-bell"></i>
-                </div>
-            </div>
-            <div class="anna-kpi-value">0</div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="anna-kpi-card">
-            <div class="anna-kpi-card-header">
-                <span class="anna-kpi-label">Role</span>
-                <div class="anna-kpi-icon anna-kpi-icon-success">
-                    <i class="bi bi-check-circle"></i>
-                </div>
-            </div>
-            <div class="anna-kpi-value" style="font-size: 1rem; font-weight: 600;">
-                {% if user.is_superuser %}Superadmin{% else %}User{% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-
-{# Apps Grid #}
-<div class="row mb-4">
-    <div class="col-12">
-        <h5 class="mb-3">
-            <i class="bi bi-apps me-2"></i>Your Apps
-        </h5>
-    </div>
-</div>
-
+{% if has_mchezo_access %}
+{# Mchezo Groups Grid #}
 <div class="row g-4 mb-5">
-    {# Wakala Apps #}
-    {% if has_wakala_access %}
-    {% for wakala in wakalas %}
-    <div class="col-md-6 col-lg-4">
-        <a href="{% url 'dashboard:wakala' wakala_id=wakala.id %}" class="text-decoration-none">
-            <div class="anna-card anna-card-interactive h-100">
-                <div class="anna-card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="d-flex align-items-center">
-                            <div class="anna-kpi-icon anna-kpi-icon-primary me-3">
-                                <i class="bi bi-shop"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0">{{ wakala.name }}</h6>
-                                <small class="text-muted">{{ wakala.business_type }}</small>
-                            </div>
-                        </div>
-                        <span class="badge bg-success">Active</span>
-                    </div>
-                    
-                    <hr class="my-3">
-                    
-                    <div class="row text-center">
-                        <div class="col-4">
-                            <small class="text-muted d-block">Location</small>
-                            <span class="small">{{ wakala.location|default:"-" }}</span>
-                        </div>
-                        <div class="col-4">
-                            <small class="text-muted d-block">Status</small>
-                            <span class="small">Open</span>
-                        </div>
-                        <div class="col-4">
-                            <small class="text-muted d-block">Role</small>
-                            <span class="small">Agent</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="anna-card-footer">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-primary">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Open App
-                        </span>
-                        <i class="bi bi-chevron-right"></i>
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div>
-    {% endfor %}
-    {% endif %}
-    
-    {# Mchezo Groups #}
-    {% if has_mchezo_access %}
     {% for group in mchezo_groups %}
     <div class="col-md-6 col-lg-4">
         <a href="{% url 'dashboard:mchezo' group_id=group.id %}" class="text-decoration-none">
@@ -154,7 +36,7 @@
                             </div>
                             <div>
                                 <h6 class="mb-0">{{ group.name }}</h6>
-                                <small class="text-muted">Chama Group</small>
+                                <small class="text-muted">Mchezo Group</small>
                             </div>
                         </div>
                         <span class="badge bg-success">Active</span>
@@ -164,23 +46,23 @@
                     
                     <div class="row text-center">
                         <div class="col-4">
-                            <small class="text-muted d-block">Members</small>
+                            <small class="text-muted d-block">Wanachama</small>
                             <span class="small">{{ group.memberships.count|default:"0" }}</span>
                         </div>
                         <div class="col-4">
-                            <small class="text-muted d-block">Contribution</small>
+                            <small class="text-muted d-block">Mchango</small>
                             <span class="small">{% format_tzs group.contribution_amount %}</span>
                         </div>
                         <div class="col-4">
-                            <small class="text-muted d-block">Role</small>
-                            <span class="small">Member</span>
+                            <small class="text-muted d-block">Mizani</small>
+                            <span class="small">{% if user.is_superuser %}Superadmin{% else %}Mwanachama{% endif %}</span>
                         </div>
                     </div>
                 </div>
                 <div class="anna-card-footer">
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="text-danger">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Open Group
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Fungua Kundi
                         </span>
                         <i class="bi bi-chevron-right"></i>
                     </div>
@@ -189,109 +71,31 @@
         </a>
     </div>
     {% endfor %}
-    {% endif %}
 </div>
 
 {# Quick Actions #}
 <div class="row mb-4">
     <div class="col-12">
         <h5 class="mb-3">
-            <i class="bi bi-lightning me-2"></i>Quick Actions
+            <i class="bi bi-lightning me-2"></i>Vitendo Haraka
         </h5>
     </div>
 </div>
 
 <div class="row g-3 mb-5">
     <div class="col-6 col-md-3">
-        {% if wakalas %}
-        <a href="{% url 'wakala:transaction_create' wakala_id=wakalas.0.id %}" class="anna-quick-action anna-quick-action-deposit text-decoration-none">
-            <i class="bi bi-plus-circle"></i>
-            <span>New Transaction</span>
-        </a>
-        {% else %}
-        <div class="anna-quick-action anna-quick-action-deposit disabled opacity-50">
-            <i class="bi bi-plus-circle"></i>
-            <span>New Transaction</span>
-        </div>
-        {% endif %}
-    </div>
-    <div class="col-6 col-md-3">
-        {% if mchezo_groups %}
         <a href="{% url 'mchezo:add_member' group_id=mchezo_groups.0.id %}" class="anna-quick-action anna-quick-action-success text-decoration-none" style="--anna-success: #10b981;">
             <i class="bi bi-person-plus"></i>
-            <span>Add Member</span>
+            <span>Ongeza Mwanachama</span>
         </a>
-        {% else %}
-        <div class="anna-quick-action disabled opacity-50">
-            <i class="bi bi-person-plus"></i>
-            <span>Add Member</span>
-        </div>
-        {% endif %}
-    </div>
-    <div class="col-6 col-md-3">
-        {% if user.is_staff %}
-        <a href="{% url 'audit:reports' %}" class="anna-quick-action text-decoration-none" style="--anna-info: #3b82f6;">
-            <i class="bi bi-file-earmark-text"></i>
-            <span>Reports</span>
-        </a>
-        {% else %}
-        <a href="{% url 'dashboard:app_switcher' %}" class="anna-quick-action text-decoration-none">
-            <i class="bi bi-grid-3x3-gap"></i>
-            <span>All Apps</span>
-        </a>
-        {% endif %}
     </div>
     <div class="col-6 col-md-3">
         <a href="{% url 'dashboard:settings' %}" class="anna-quick-action text-decoration-none" style="--anna-info: #3b82f6;">
             <i class="bi bi-gear"></i>
-            <span>Settings</span>
+            <span>Mipangilio</span>
         </a>
     </div>
 </div>
-
-{# Admin Section #}
-{% if user.is_staff %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h5 class="mb-3">
-            <i class="bi bi-shield-check me-2"></i>Admin Area
-        </h5>
-    </div>
-</div>
-
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <a href="/admin/" class="text-decoration-none">
-            <div class="anna-card anna-card-interactive h-100">
-                <div class="anna-card-body text-center py-5">
-                    <i class="bi bi-database d-block fs-1 text-secondary mb-3"></i>
-                    <h6 class="mb-0">Admin Panel</h6>
-                </div>
-            </div>
-        </a>
-    </div>
-    <div class="col-md-4">
-        <a href="{% url 'dashboard:admin' %}" class="text-decoration-none">
-            <div class="anna-card anna-card-interactive h-100">
-                <div class="anna-card-body text-center py-5">
-                    <i class="bi bi-speedometer2 d-block fs-1 text-primary mb-3"></i>
-                    <h6 class="mb-0">Dashboard</h6>
-                </div>
-            </div>
-        </a>
-    </div>
-    <div class="col-md-4">
-        <a href="{% url 'accounts:user_list' %}" class="text-decoration-none">
-            <div class="anna-card anna-card-interactive h-100">
-                <div class="anna-card-body text-center py-5">
-                    <i class="bi bi-people d-block fs-1 text-success mb-3"></i>
-                    <h6 class="mb-0">User Management</h6>
-                </div>
-            </div>
-        </a>
-    </div>
-</div>
-{% endif %}
 
 {% else %}
 {# No Access Message #}
@@ -300,17 +104,17 @@
         <div class="anna-card text-center">
             <div class="anna-card-body py-5">
                 <i class="bi bi-exclamation-circle text-muted d-block fs-1 mb-3"></i>
-                <h5 class="mb-2">No App Access</h5>
+                <h5 class="mb-2">Huna Ufikiaji</h5>
                 <p class="text-muted mb-4">
-                    You don't have access to any ANNA apps yet. 
-                    Contact the administrator for registration.
+                    Huna uanachama wa kundi la Mchezo.
+                    Wasiliana na msimamizi kujiunga.
                 </p>
                 <div class="d-flex justify-content-center gap-2">
                     <a href="{% url 'accounts:profile' %}" class="anna-btn anna-btn-primary">
-                        <i class="bi bi-person"></i> View Profile
+                        <i class="bi bi-person"></i> Tazama Profile
                     </a>
                     <a href="{% url 'accounts:logout' %}" class="anna-btn anna-btn-secondary">
-                        <i class="bi bi-box-arrow-right"></i> Logout
+                        <i class="bi bi-box-arrow-right"></i> Toka
                     </a>
                 </div>
             </div>
@@ -318,35 +122,5 @@
     </div>
 </div>
 {% endif %}
-
-{# Footer Navigation #}
-<div class="row mt-4">
-    <div class="col-12">
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center flex-wrap">
-                <li class="page-item">
-                    <a class="page-link" href="/">
-                        <i class="bi bi-house"></i> Home
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{% url 'dashboard:app_switcher' %}">
-                        <i class="bi bi-grid-3x3-gap"></i> Apps
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{% url 'dashboard:settings' %}">
-                        <i class="bi bi-gear"></i> Settings
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{% url 'accounts:logout' %}">
-                        <i class="bi bi-box-arrow-right"></i> Logout
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-</div>
 
 {% endblock %}

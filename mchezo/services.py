@@ -152,17 +152,20 @@ class MchezoService:
             amount: Contribution amount
             payment_method: Payment method
             created_by: The user recording the contribution (for audit)
-            **kwargs: Additional details
+            **kwargs: Additional details (including contribution_week)
             
         Returns:
             Contribution: The created contribution
         """
         from mchezo.models import Contribution
         
+        contribution_week = kwargs.pop('contribution_week', cycle.get_current_week())
+        
         contribution = Contribution.objects.create(
             cycle=cycle,
             membership=membership,
             amount=amount,
+            contribution_week=contribution_week,
             payment_method=payment_method,
             status='completed',
             contribution_date=timezone.now().date(),
@@ -173,6 +176,52 @@ class MchezoService:
         )
         
         return contribution
+    
+    @staticmethod
+    @db_transaction.atomic
+    def record_bulk_contribution(cycle, membership, amount_per_week, weeks_count, payment_method, created_by=None, **kwargs):
+        """
+        Record bulk contributions for multiple weeks at once.
+        
+        Args:
+            cycle: The active cycle
+            membership: The member's membership
+            amount_per_week: Amount to pay per week
+            weeks_count: Number of weeks to pay for
+            payment_method: Payment method
+            created_by: The user recording the contribution (for audit)
+            **kwargs: Additional details
+            
+        Returns:
+            list: List of created Contribution objects
+        """
+        from mchezo.models import Contribution
+        
+        contributions = []
+        current_week = cycle.get_current_week()
+        total_weeks = cycle.group.get_member_count()
+        
+        for i in range(int(weeks_count)):
+            week_num = current_week + i
+            if week_num > total_weeks:
+                break
+            
+            contribution = Contribution.objects.create(
+                cycle=cycle,
+                membership=membership,
+                amount=amount_per_week,
+                contribution_week=week_num,
+                payment_method=payment_method,
+                status='completed',
+                contribution_date=timezone.now().date(),
+                contribution_time=timezone.now().time(),
+                created_by=created_by or cycle.created_by,
+                original_recorder=created_by or cycle.created_by,
+                **kwargs
+            )
+            contributions.append(contribution)
+        
+        return contributions
     
     @staticmethod
     @db_transaction.atomic

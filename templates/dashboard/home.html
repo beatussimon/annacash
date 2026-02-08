@@ -129,7 +129,7 @@
     {% endfor %}
     {% endif %}
     
-    {# Mchezo Cards # has_mchezo}
+    {# Mchezo Cards - has_mchezo #}
     {% if has_mchezo_access %}
     {% for group in mchezo_groups %}
     <div class="col-md-6 col-lg-4">
@@ -193,38 +193,6 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
-{% endif %}
-
-{# Footer Navigation #}
-{% if has_wakala_access or has_mchezo_access %}
-<div class="row mt-4">
-    <div class="col-12">
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center flex-wrap">
-                <li class="page-item">
-                    <a class="page-link" href="/">
-                        <i class="bi bi-house"></i> Home
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{% url 'dashboard:app_switcher' %}">
-                        <i class="bi bi-grid-3x3-gap"></i> Apps
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{% url 'dashboard:settings' %}">
-                        <i class="bi bi-gear"></i> Settings
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{% url 'accounts:logout' %}">
-                        <i class="bi bi-box-arrow-right"></i> Logout
-                    </a>
-                </li>
-            </ul>
-        </nav>
     </div>
 </div>
 {% endif %}

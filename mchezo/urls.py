@@ -22,6 +22,7 @@ urlpatterns = [
     # Contribution and payout
     path('<int:group_id>/contribution/create/', views.MchezoContributionCreateView.as_view(), name='contribution_create'),
     path('<int:group_id>/payout/create/', views.MchezoPayoutCreateView.as_view(), name='payout_create'),
+    path('<int:group_id>/payout/<int:payout_id>/edit/', views.MchezoPayoutUpdateView.as_view(), name='payout_edit'),
     
     # Settings
     path('<int:group_id>/settings/', views.mchezo_group_settings, name='settings'),

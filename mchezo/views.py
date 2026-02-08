@@ -21,7 +21,7 @@ from core.permissions import has_mchezo_role
 from core.services import AuditLogger
 from mchezo.services import MchezoService
 from mchezo.models import Group, Membership, Cycle, Contribution, Payout
-from mchezo.forms import MembershipForm, ContributionForm, PayoutForm, CycleStartForm
+from mchezo.forms import MembershipForm, ContributionForm, PayoutForm, PayoutEditForm, CycleStartForm
 
 
 class MchezoMemberListView(ListView):
@@ -197,7 +197,7 @@ class MchezoContributionCreateView(CreateView):
         return super().get(request, *args, **kwargs)
     
     def get_form(self, form_class=None):
-        form = ContributionForm(group=self.group)
+        form = ContributionForm(group=self.group, cycle=self.cycle)
         return form
     
     @db_transaction.atomic
@@ -206,29 +206,69 @@ class MchezoContributionCreateView(CreateView):
         cycle = self.cycle
         
         try:
-            contribution = MchezoService.record_contribution(
-                cycle=cycle,
-                membership=form.cleaned_data['membership'],
-                amount=form.cleaned_data['amount'],
-                payment_method=form.cleaned_data['payment_method'],
-                reference_number=form.cleaned_data.get('reference_number', ''),
-                notes=form.cleaned_data.get('notes', ''),
-                created_by=self.request.user,
-            )
+            # Get contribution week from form
+            contribution_week = int(form.cleaned_data.get('contribution_week', cycle.get_current_week()))
+            weeks_to_pay = int(form.cleaned_data.get('weeks_to_pay', 1))
             
-            # Log the contribution
-            AuditLogger.log(
-                user=self.request.user,
-                action='contribution',
-                content_object=contribution,
-                description=f"Contribution of {contribution.amount} recorded for {contribution.membership.user.get_full_name()}",
-                request=self.request
-            )
+            # Check if this is a bulk payment (multiple weeks at once)
+            if weeks_to_pay > 1:
+                # Calculate amount per week
+                amount_per_week = form.cleaned_data['amount'] / weeks_to_pay
+                
+                # Record bulk contributions
+                contributions = MchezoService.record_bulk_contribution(
+                    cycle=cycle,
+                    membership=form.cleaned_data['membership'],
+                    amount_per_week=amount_per_week,
+                    weeks_count=weeks_to_pay,
+                    payment_method=form.cleaned_data['payment_method'],
+                    reference_number=form.cleaned_data.get('reference_number', ''),
+                    notes=form.cleaned_data.get('notes', ''),
+                    created_by=self.request.user,
+                )
+                
+                total_amount = amount_per_week * len(contributions)
+                
+                # Log the contribution
+                AuditLogger.log(
+                    user=self.request.user,
+                    action='contribution',
+                    content_object=contributions[0],
+                    description=f"Bulk contribution of TZS {total_amount:,.0f} for {len(contributions)} weeks recorded for {contributions[0].membership.user.get_full_name()}",
+                    request=self.request
+                )
+                
+                messages.success(
+                    self.request, 
+                    f"Bulk contribution of TZS {total_amount:,.0f} for {len(contributions)} weeks recorded."
+                )
+            else:
+                # Single contribution (incremental or fixed)
+                contribution = MchezoService.record_contribution(
+                    cycle=cycle,
+                    membership=form.cleaned_data['membership'],
+                    amount=form.cleaned_data['amount'],
+                    payment_method=form.cleaned_data['payment_method'],
+                    reference_number=form.cleaned_data.get('reference_number', ''),
+                    notes=form.cleaned_data.get('notes', ''),
+                    contribution_week=contribution_week,
+                    created_by=self.request.user,
+                )
+                
+                # Log the contribution
+                AuditLogger.log(
+                    user=self.request.user,
+                    action='contribution',
+                    content_object=contribution,
+                    description=f"Contribution of TZS {contribution.amount:,.0f} for week {contribution_week} recorded for {contribution.membership.user.get_full_name()}",
+                    request=self.request
+                )
+                
+                messages.success(
+                    self.request, 
+                    f"Contribution of TZS {contribution.amount:,.0f} for week {contribution_week} recorded."
+                )
             
-            messages.success(
-                self.request, 
-                f"Contribution of TZS {contribution.amount:,.0f} recorded."
-            )
             return redirect('dashboard:mchezo', group_id=group.id)
             
         except ValueError as e:
@@ -256,7 +296,7 @@ class MchezoPayoutCreateView(CreateView):
     def get(self, request, group_id, *args, **kwargs):
         group = get_object_or_404(Group, pk=group_id)
         
-        # Check permissions
+        # Check permissions - admin can record payouts
         if not has_mchezo_role(request.user, group, ['admin', 'treasurer']):
             messages.error(request, "You don't have permission to record payouts.")
             return redirect('dashboard:mchezo', group_id=group.id)
@@ -313,6 +353,77 @@ class MchezoPayoutCreateView(CreateView):
         context['group'] = self.group
         context['cycle'] = self.cycle
         context['page_title'] = 'Record Payout'
+        return context
+
+
+class MchezoPayoutUpdateView(UpdateView):
+    """Edit an existing payout - only admin who created the mchezo can edit."""
+    model = Payout
+    template_name = 'mchezo/payout_form.html'
+    
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.group = get_object_or_404(Group, pk=kwargs['group_id'])
+        self.cycle = self.group.get_current_cycle()
+    
+    def get(self, request, group_id, *args, **kwargs):
+        group = get_object_or_404(Group, pk=group_id)
+        
+        # Check permissions - admin can edit payouts
+        if not has_mchezo_role(request.user, group, ['admin']):
+            messages.error(request, "Only admins can edit payouts.")
+            return redirect('dashboard:mchezo', group_id=group.id)
+        
+        return super().get(request, *args, **kwargs)
+    
+    def get_object(self, queryset=None):
+        payout_id = self.kwargs.get('payout_id')
+        return get_object_or_404(Payout, pk=payout_id, cycle=self.cycle)
+    
+    def get_form(self, form_class=None):
+        form = PayoutEditForm(group=self.group, cycle=self.cycle, instance=self.object)
+        return form
+    
+    @db_transaction.atomic
+    def form_valid(self, form):
+        group = self.group
+        payout = self.object
+        old_amount = payout.amount
+        
+        try:
+            # Update payout
+            payout.membership = form.cleaned_data['membership']
+            payout.amount = form.cleaned_data['amount']
+            payout.payment_method = form.cleaned_data['payment_method']
+            payout.reference_number = form.cleaned_data.get('reference_number', '')
+            payout.notes = form.cleaned_data.get('notes', '')
+            payout.updated_by = self.request.user
+            payout.save()
+            
+            # Log the update
+            AuditLogger.log(
+                user=self.request.user,
+                action='update',
+                content_object=payout,
+                description=f"Payout updated from TZS {old_amount:,.0f} to TZS {payout.amount:,.0f}",
+                request=self.request
+            )
+            
+            messages.success(
+                self.request, 
+                f"Payout updated successfully."
+            )
+            return redirect('dashboard:mchezo', group_id=group.id)
+            
+        except ValueError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['group'] = self.group
+        context['cycle'] = self.cycle
+        context['page_title'] = 'Edit Payout'
         return context
 
 
