@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }} - {{ wakala.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="anna-card">
+            <div class="anna-card-header px-4 py-3 border-bottom">
+                <h5 class="mb-0">
+                    <i class="bi bi-gear text-primary me-2"></i> {{ page_title }}
+                </h5>
+            </div>
+            <form method="post" class="anna-card-body">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="anna-alert anna-alert-danger mb-4">
+                    {% for error in form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="anna-form-group">
+                            <label class="anna-form-label" for="id_name">
+                                Business Name *
+                            </label>
+                            <input type="text" name="name" id="id_name" class="anna-form-input" value="{{ wakala.name }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="anna-form-group">
+                            <label class="anna-form-label" for="id_business_type">
+                                Business Type
+                            </label>
+                            <input type="text" name="business_type" id="id_business_type" class="anna-form-input" value="{{ wakala.business_type }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="anna-form-group">
+                            <label class="anna-form-label" for="id_phone_number">
+                                Phone Number *
+                            </label>
+                            <input type="text" name="phone_number" id="id_phone_number" class="anna-form-input" value="{{ wakala.phone_number }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="anna-form-group">
+                            <label class="anna-form-label" for="id_alternate_phone">
+                                Alternate Phone
+                            </label>
+                            <input type="text" name="alternate_phone" id="id_alternate_phone" class="anna-form-input" value="{{ wakala.alternate_phone|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="anna-form-group">
+                    <label class="anna-form-label" for="id_email">
+                        Email
+                    </label>
+                    <input type="email" name="email" id="id_email" class="anna-form-input" value="{{ wakala.email|default:'' }}">
+                </div>
+                
+                <div class="anna-form-group">
+                    <label class="anna-form-label" for="id_address">
+                        Address
+                    </label>
+                    <textarea name="address" id="id_address" class="anna-form-input" rows="2">{{ wakala.address|default:'' }}</textarea>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="anna-form-group">
+                            <label class="anna-form-label" for="id_region">
+                                Region
+                            </label>
+                            <input type="text" name="region" id="id_region" class="anna-form-input" value="{{ wakala.region|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="anna-form-group">
+                            <label class="anna-form-label" for="id_district">
+                                District
+                            </label>
+                            <input type="text" name="district" id="id_district" class="anna-form-input" value="{{ wakala.district|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input type="checkbox" name="allows_agents" id="id_allows_agents" class="form-check-input"{% if wakala.allows_agents %} checked{% endif %}>
+                            <label class="form-check-label" for="id_allows_agents">
+                                Allow agents to record transactions
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input type="checkbox" name="requires_manager_approval" id="id_requires_manager_approval" class="form-check-input"{% if wakala.requires_manager_approval %} checked{% endif %}>
+                            <label class="form-check-label" for="id_requires_manager_approval">
+                                Require manager approval for transactions
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{% url 'dashboard:wakala' wakala_id=wakala.id %}" class="anna-btn anna-btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="anna-btn anna-btn-primary">
+                        <i class="bi bi-check"></i> Save Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

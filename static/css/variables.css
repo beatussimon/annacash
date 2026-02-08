@@ -1,0 +1,573 @@
+/*
+ANNA Platform Design System
+============================
+Financial-grade, trustworthy, professional design tokens.
+*/
+
+/* ==========================================================================
+   COLOR SYSTEM
+   ========================================================================== */
+
+/* Primary Brand Colors */
+:root {
+  /* Financial Trust Palette */
+  --anna-primary: #1a5f7a;
+  --anna-primary-dark: #0d4a5f;
+  --anna-primary-light: #2d7d9a;
+  
+  --anna-secondary: #159895;
+  --anna-secondary-dark: #0e7a77;
+  --anna-secondary-light: #2db3ae;
+  
+  --anna-accent: #57c5b6;
+  --anna-accent-dark: #3ba89f;
+  --anna-accent-light: #7dd4c8;
+  
+  /* Semantic Colors */
+  --anna-success: #10b981;
+  --anna-success-light: #d1fae5;
+  --anna-success-dark: #059669;
+  
+  --anna-warning: #f59e0b;
+  --anna-warning-light: #fef3c7;
+  --anna-warning-dark: #d97706;
+  
+  --anna-danger: #ef4444;
+  --anna-danger-light: #fee2e2;
+  --anna-danger-dark: #dc2626;
+  
+  --anna-info: #3b82f6;
+  --anna-info-light: #dbeafe;
+  --anna-info-dark: #2563eb;
+  
+  /* Neutral Colors */
+  --anna-bg-primary: #ffffff;
+  --anna-bg-secondary: #f8fafc;
+  --anna-bg-tertiary: #f1f5f9;
+  
+  --anna-text-primary: #1e293b;
+  --anna-text-secondary: #64748b;
+  --anna-text-tertiary: #94a3b8;
+  
+  --anna-border: #e2e8f0;
+  --anna-border-dark: #cbd5e1;
+  
+  /* Role Badge Colors */
+  --anna-role-owner: #1e40af;
+  --anna-role-manager: #166534;
+  --anna-role-agent: #0e7490;
+  --anna-role-admin: #b45309;
+  --anna-role-treasurer: #166534;
+  --anna-role-member: #6b7280;
+  
+  /* Financial Status Colors */
+  --anna-balance-positive: #059669;
+  --anna-balance-negative: #dc2626;
+  --anna-balance-neutral: #64748b;
+  
+  /* Day Status Colors */
+  --anna-day-open: #10b981;
+  --anna-day-closed: #6b7280;
+  --anna-day-closing: #f59e0b;
+  
+  /* Shadows */
+  --anna-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --anna-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --anna-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --anna-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --anna-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* Border Radius */
+  --anna-radius-sm: 0.25rem;
+  --anna-radius: 0.375rem;
+  --anna-radius-md: 0.5rem;
+  --anna-radius-lg: 0.75rem;
+  --anna-radius-xl: 1rem;
+  --anna-radius-full: 9999px;
+  
+  /* Typography */
+  --anna-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --anna-font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+  
+  /* Spacing */
+  --anna-space-1: 0.25rem;
+  --anna-space-2: 0.5rem;
+  --anna-space-3: 0.75rem;
+  --anna-space-4: 1rem;
+  --anna-space-5: 1.25rem;
+  --anna-space-6: 1.5rem;
+  --anna-space-8: 2rem;
+  --anna-space-10: 2.5rem;
+  --anna-space-12: 3rem;
+  
+  /* Transitions */
+  --anna-transition-fast: 150ms ease;
+  --anna-transition: 200ms ease;
+  --anna-transition-slow: 300ms ease;
+  
+  /* Z-index */
+  --anna-z-dropdown: 1000;
+  --anna-z-sticky: 1020;
+  --anna-z-fixed: 1030;
+  --anna-z-modal-backdrop: 1040;
+  --anna-z-modal: 1050;
+  --anna-z-popover: 1060;
+  --anna-z-tooltip: 1070;
+}
+
+/* Dark Mode Colors */
+[data-theme="dark"] {
+  --anna-bg-primary: #0f172a;
+  --anna-bg-secondary: #1e293b;
+  --anna-bg-tertiary: #334155;
+  
+  --anna-text-primary: #f1f5f9;
+  --anna-text-secondary: #94a3b8;
+  --anna-text-tertiary: #64748b;
+  
+  --anna-border: #334155;
+  --anna-border-dark: #475569;
+  
+  --anna-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --anna-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4);
+  --anna-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+  --anna-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+}
+
+/* ==========================================================================
+   TYPOGRAPHY
+   ========================================================================== */
+
+.anna-font-sans {
+  font-family: var(--anna-font-sans);
+}
+
+.anna-font-mono {
+  font-family: var(--anna-font-mono);
+}
+
+/* Financial Amount Styling */
+.anna-amount {
+  font-family: var(--anna-font-mono);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.anna-amount-positive {
+  color: var(--anna-balance-positive);
+}
+
+.anna-amount-negative {
+  color: var(--anna-balance-negative);
+}
+
+.anna-amount-neutral {
+  color: var(--anna-text-primary);
+}
+
+/* ==========================================================================
+   CARD SYSTEM
+   ========================================================================== */
+
+.anna-card {
+  background: var(--anna-bg-primary);
+  border: 1px solid var(--anna-border);
+  border-radius: var(--anna-radius-lg);
+  box-shadow: var(--anna-shadow-sm);
+  transition: all var(--anna-transition);
+}
+
+.anna-card:hover {
+  box-shadow: var(--anna-shadow);
+}
+
+.anna-card-interactive {
+  cursor: pointer;
+}
+
+.anna-card-interactive:hover {
+  box-shadow: var(--anna-shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Card Variants */
+.anna-card-primary {
+  border-left: 4px solid var(--anna-primary);
+}
+
+.anna-card-success {
+  border-left: 4px solid var(--anna-success);
+}
+
+.anna-card-warning {
+  border-left: 4px solid var(--anna-warning);
+}
+
+.anna-card-danger {
+  border-left: 4px solid var(--anna-danger);
+}
+
+.anna-card-info {
+  border-left: 4px solid var(--anna-info);
+}
+
+/* ==========================================================================
+   BUTTON SYSTEM
+   ========================================================================== */
+
+.anna-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--anna-space-2);
+  padding: var(--anna-space-2) var(--anna-space-4);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--anna-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--anna-transition-fast);
+  white-space: nowrap;
+}
+
+.anna-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--anna-primary-light / 0.3);
+}
+
+.anna-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Button Variants */
+.anna-btn-primary {
+  background: linear-gradient(135deg, var(--anna-primary), var(--anna-secondary));
+  color: white;
+}
+
+.anna-btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--anna-primary-dark), var(--anna-secondary-dark));
+}
+
+.anna-btn-secondary {
+  background: var(--anna-bg-tertiary);
+  color: var(--anna-text-primary);
+  border-color: var(--anna-border);
+}
+
+.anna-btn-secondary:hover:not(:disabled) {
+  background: var(--anna-border);
+}
+
+.anna-btn-success {
+  background: var(--anna-success);
+  color: white;
+}
+
+.anna-btn-success:hover:not(:disabled) {
+  background: var(--anna-success-dark);
+}
+
+.anna-btn-danger {
+  background: var(--anna-danger);
+  color: white;
+}
+
+.anna-btn-danger:hover:not(:disabled) {
+  background: var(--anna-danger-dark);
+}
+
+.anna-btn-warning {
+  background: var(--anna-warning);
+  color: white;
+}
+
+.anna-btn-warning:hover:not(:disabled) {
+  background: var(--anna-warning-dark);
+}
+
+/* Button Sizes */
+.anna-btn-sm {
+  padding: var(--anna-space-1) var(--anna-space-3);
+  font-size: 0.75rem;
+}
+
+.anna-btn-md {
+  padding: var(--anna-space-2) var(--anna-space-4);
+  font-size: 0.875rem;
+}
+
+.anna-btn-lg {
+  padding: var(--anna-space-3) var(--anna-space-6);
+  font-size: 1rem;
+}
+
+.anna-btn-icon {
+  padding: var(--anna-space-2);
+  aspect-ratio: 1;
+}
+
+/* ==========================================================================
+   ROLE BADGES
+   ========================================================================== */
+
+.anna-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--anna-space-1);
+  padding: var(--anna-space-1) var(--anna-space-3);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--anna-radius-full);
+  white-space: nowrap;
+}
+
+.anna-role-badge-owner {
+  background: var(--anna-role-owner);
+  color: white;
+}
+
+.anna-role-badge-manager {
+  background: var(--anna-role-manager);
+  color: white;
+}
+
+.anna-role-badge-agent {
+  background: var(--anna-role-agent);
+  color: white;
+}
+
+.anna-role-badge-admin {
+  background: var(--anna-role-admin);
+  color: white;
+}
+
+.anna-role-badge-treasurer {
+  background: var(--anna-role-treasurer);
+  color: white;
+}
+
+.anna-role-badge-member {
+  background: var(--anna-role-member);
+  color: white;
+}
+
+/* ==========================================================================
+   STATUS INDICATORS
+   ========================================================================== */
+
+.anna-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--anna-space-1);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.anna-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--anna-radius-full);
+}
+
+.anna-status-dot::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.anna-status-open .anna-status-dot::before {
+  background: var(--anna-day-open);
+  box-shadow: 0 0 0 3px var(--anna-success-light);
+}
+
+.anna-status-closed .anna-status-dot::before {
+  background: var(--anna-day-closed);
+}
+
+.anna-status-closing .anna-status-dot::before {
+  background: var(--anna-day-closing);
+  box-shadow: 0 0 0 3px var(--anna-warning-light);
+}
+
+.anna-status-balanced {
+  color: var(--anna-success);
+}
+
+.anna-status-discrepancy {
+  color: var(--anna-danger);
+}
+
+/* ==========================================================================
+   FORM ELEMENTS
+   ========================================================================== */
+
+.anna-form-group {
+  margin-bottom: var(--anna-space-4);
+}
+
+.anna-form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--anna-text-primary);
+  margin-bottom: var(--anna-space-2);
+}
+
+.anna-form-input {
+  width: 100%;
+  padding: var(--anna-space-2) var(--anna-space-3);
+  font-size: 0.875rem;
+  color: var(--anna-text-primary);
+  background: var(--anna-bg-primary);
+  border: 1px solid var(--anna-border);
+  border-radius: var(--anna-radius);
+  transition: all var(--anna-transition-fast);
+}
+
+.anna-form-input:focus {
+  outline: none;
+  border-color: var(--anna-primary);
+  box-shadow: 0 0 0 3px var(--anna-primary-light / 0.2);
+}
+
+.anna-form-input:disabled {
+  background: var(--anna-bg-tertiary);
+  cursor: not-allowed;
+}
+
+.anna-form-input-error {
+  border-color: var(--anna-danger);
+}
+
+.anna-form-error {
+  font-size: 0.75rem;
+  color: var(--anna-danger);
+  margin-top: var(--anna-space-1);
+}
+
+.anna-form-hint {
+  font-size: 0.75rem;
+  color: var(--anna-text-secondary);
+  margin-top: var(--anna-space-1);
+}
+
+/* ==========================================================================
+   LAYOUT UTILITIES
+   ========================================================================== */
+
+.anna-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--anna-space-4);
+}
+
+.anna-section {
+  margin-bottom: var(--anna-space-6);
+}
+
+.anna-grid {
+  display: grid;
+  gap: var(--anna-space-4);
+}
+
+.anna-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.anna-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.anna-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 768px) {
+  .anna-grid-2,
+  .anna-grid-3,
+  .anna-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.anna-flex {
+  display: flex;
+}
+
+.anna-flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.anna-flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.anna-gap-2 {
+  gap: var(--anna-space-2);
+}
+
+.anna-gap-4 {
+  gap: var(--anna-space-4);
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@keyframes anna-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes anna-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.anna-animate-pulse {
+  animation: anna-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.anna-animate-spin {
+  animation: anna-spin 1s linear infinite;
+}
+
+/* ==========================================================================
+   TRANSACTION TYPE COLORS
+   ========================================================================== */
+
+.anna-transaction-deposit {
+  color: var(--anna-success);
+}
+
+.anna-transaction-withdrawal {
+  color: var(--anna-danger);
+}
+
+.anna-transaction-transfer {
+  color: var(--anna-info);
+}
+
+.anna-transaction-fee {
+  color: var(--anna-warning);
+}
+
+.anna-transaction-adjustment {
+  color: var(--anna-text-secondary);
+}

@@ -1,0 +1,633 @@
+/*
+ANNA Platform Core Styles
+==========================
+Professional, financial-grade styling for the ANNA platform.
+*/
+
+/* ==========================================================================
+   BASE STYLES
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--anna-font-sans);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--anna-text-primary);
+  background-color: var(--anna-bg-secondary);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* ==========================================================================
+   NAVBAR STYLES
+   ========================================================================== */
+
+.anna-navbar {
+  background: linear-gradient(135deg, var(--anna-primary), var(--anna-secondary));
+  box-shadow: var(--anna-shadow-md);
+}
+
+.anna-navbar-brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--anna-space-2);
+}
+
+.anna-navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--anna-space-1);
+}
+
+.anna-nav-link {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: var(--anna-space-2) var(--anna-space-3);
+  border-radius: var(--anna-radius);
+  text-decoration: none;
+  transition: all var(--anna-transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--anna-space-2);
+}
+
+.anna-nav-link:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.anna-nav-link.active {
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ==========================================================================
+   ROLE INDICATOR
+   ========================================================================== */
+
+.anna-role-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--anna-space-2);
+  padding: var(--anna-space-1) var(--anna-space-3);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--anna-radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.anna-role-indicator i {
+  font-size: 0.875rem;
+}
+
+.anna-role-indicator-owner {
+  background: var(--anna-role-owner);
+}
+
+.anna-role-indicator-manager {
+  background: var(--anna-role-manager);
+}
+
+.anna-role-indicator-agent {
+  background: var(--anna-role-agent);
+}
+
+.anna-role-indicator-admin {
+  background: var(--anna-role-admin);
+}
+
+.anna-role-indicator-treasurer {
+  background: var(--anna-role-treasurer);
+}
+
+.anna-role-indicator-superuser {
+  background: var(--anna-danger);
+  animation: anna-pulse 2s infinite;
+}
+
+/* ==========================================================================
+   APP SWITCHER
+   ========================================================================== */
+
+.anna-app-switcher {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--anna-radius-full);
+  padding: var(--anna-space-1);
+}
+
+.anna-app-switcher-btn {
+  padding: var(--anna-space-2) var(--anna-space-4);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  background: transparent;
+  border: none;
+  border-radius: var(--anna-radius-full);
+  cursor: pointer;
+  transition: all var(--anna-transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--anna-space-2);
+}
+
+.anna-app-switcher-btn:hover {
+  color: white;
+}
+
+.anna-app-switcher-btn.active {
+  background: white;
+  color: var(--anna-primary);
+}
+
+.anna-app-switcher-btn Wakala {
+  color: var(--anna-primary);
+}
+
+.anna-app-switcher-btn Mchezo {
+  color: var(--anna-danger);
+}
+
+/* ==========================================================================
+   KPI CARDS
+   ========================================================================== */
+
+.anna-kpi-card {
+  background: var(--anna-bg-primary);
+  border: 1px solid var(--anna-border);
+  border-radius: var(--anna-radius-lg);
+  padding: var(--anna-space-4);
+  box-shadow: var(--anna-shadow-sm);
+}
+
+.anna-kpi-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--anna-space-3);
+}
+
+.anna-kpi-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--anna-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.anna-kpi-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--anna-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.anna-kpi-icon-primary {
+  background: var(--anna-primary) / 0.1;
+  color: var(--anna-primary);
+}
+
+.anna-kpi-icon-success {
+  background: var(--anna-success) / 0.1;
+  color: var(--anna-success);
+}
+
+.anna-kpi-icon-warning {
+  background: var(--anna-warning) / 0.1;
+  color: var(--anna-warning);
+}
+
+.anna-kpi-icon-danger {
+  background: var(--anna-danger) / 0.1;
+  color: var(--anna-danger);
+}
+
+.anna-kpi-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--anna-text-primary);
+  font-family: var(--anna-font-mono);
+  letter-spacing: -0.02em;
+}
+
+.anna-kpi-change {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--anna-space-1);
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: var(--anna-space-2);
+}
+
+.anna-kpi-change-positive {
+  color: var(--anna-success);
+}
+
+.anna-kpi-change-negative {
+  color: var(--anna-danger);
+}
+
+/* ==========================================================================
+   TRANSACTION LIST
+   ========================================================================== */
+
+.anna-transaction-item {
+  display: flex;
+  align-items: center;
+  padding: var(--anna-space-3) var(--anna-space-4);
+  border-bottom: 1px solid var(--anna-border);
+  transition: background var(--anna-transition-fast);
+}
+
+.anna-transaction-item:last-child {
+  border-bottom: none;
+}
+
+.anna-transaction-item:hover {
+  background: var(--anna-bg-tertiary);
+}
+
+.anna-transaction-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--anna-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--anna-space-3);
+  font-size: 1rem;
+}
+
+.anna-transaction-icon-deposit {
+  background: var(--anna-success) / 0.1;
+  color: var(--anna-success);
+}
+
+.anna-transaction-icon-withdrawal {
+  background: var(--anna-danger) / 0.1;
+  color: var(--anna-danger);
+}
+
+.anna-transaction-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.anna-transaction-title {
+  font-weight: 500;
+  color: var(--anna-text-primary);
+  margin-bottom: var(--anna-space-1);
+}
+
+.anna-transaction-meta {
+  font-size: 0.75rem;
+  color: var(--anna-text-secondary);
+}
+
+.anna-transaction-amount {
+  font-family: var(--anna-font-mono);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: right;
+}
+
+.anna-transaction-amount-deposit {
+  color: var(--anna-success);
+}
+
+.anna-transaction-amount-withdrawal {
+  color: var(--anna-danger);
+}
+
+.anna-transaction-actions {
+  display: flex;
+  gap: var(--anna-space-2);
+  margin-left: var(--anna-space-3);
+}
+
+/* ==========================================================================
+   DAY STATUS BAR
+   ========================================================================== */
+
+.anna-day-status {
+  display: flex;
+  align-items: center;
+  gap: var(--anna-space-4);
+  padding: var(--anna-space-3) var(--anna-space-4);
+  background: var(--anna-bg-primary);
+  border: 1px solid var(--anna-border);
+  border-radius: var(--anna-radius-lg);
+  margin-bottom: var(--anna-space-4);
+}
+
+.anna-day-status-item {
+  display: flex;
+  align-items: center;
+  gap: var(--anna-space-2);
+}
+
+.anna-day-status-label {
+  font-size: 0.75rem;
+  color: var(--anna-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.anna-day-status-value {
+  font-family: var(--anna-font-mono);
+  font-weight: 600;
+  color: var(--anna-text-primary);
+}
+
+.anna-day-status-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--anna-border);
+}
+
+/* ==========================================================================
+   QUICK ACTION BUTTONS
+   ========================================================================== */
+
+.anna-quick-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--anna-space-4);
+  background: var(--anna-bg-primary);
+  border: 1px solid var(--anna-border);
+  border-radius: var(--anna-radius-lg);
+  cursor: pointer;
+  transition: all var(--anna-transition);
+  text-decoration: none;
+  color: var(--anna-text-primary);
+}
+
+.anna-quick-action:hover {
+  border-color: var(--anna-primary);
+  box-shadow: var(--anna-shadow-md);
+  transform: translateY(-2px);
+  color: var(--anna-primary);
+}
+
+.anna-quick-action i {
+  font-size: 1.5rem;
+  margin-bottom: var(--anna-space-2);
+}
+
+.anna-quick-action span {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.anna-quick-action-deposit i {
+  color: var(--anna-success);
+}
+
+.anna-quick-action-withdrawal i {
+  color: var(--anna-danger);
+}
+
+.anna-quick-action-transfer i {
+  color: var(--anna-info);
+}
+
+/* ==========================================================================
+   ALERT BANNERS
+   ========================================================================== */
+
+.anna-alert {
+  padding: var(--anna-space-3) var(--anna-space-4);
+  border-radius: var(--anna-radius-lg);
+  margin-bottom: var(--anna-space-4);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--anna-space-3);
+}
+
+.anna-alert-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.anna-alert-content {
+  flex: 1;
+}
+
+.anna-alert-title {
+  font-weight: 600;
+  margin-bottom: var(--anna-space-1);
+}
+
+.anna-alert-message {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.anna-alert-success {
+  background: var(--anna-success-light);
+  border: 1px solid var(--anna-success);
+  color: var(--anna-success-dark);
+}
+
+.anna-alert-warning {
+  background: var(--anna-warning-light);
+  border: 1px solid var(--anna-warning);
+  color: var(--anna-warning-dark);
+}
+
+.anna-alert-danger {
+  background: var(--anna-danger-light);
+  border: 1px solid var(--anna-danger);
+  color: var(--anna-danger-dark);
+}
+
+.anna-alert-info {
+  background: var(--anna-info-light);
+  border: 1px solid var(--anna-info);
+  color: var(--anna-info-dark);
+}
+
+/* ==========================================================================
+   EMPTY STATES
+   ========================================================================== */
+
+.anna-empty-state {
+  text-align: center;
+  padding: var(--anna-space-12);
+}
+
+.anna-empty-state-icon {
+  font-size: 4rem;
+  color: var(--anna-text-tertiary);
+  margin-bottom: var(--anna-space-4);
+}
+
+.anna-empty-state-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--anna-text-primary);
+  margin-bottom: var(--anna-space-2);
+}
+
+.anna-empty-state-message {
+  color: var(--anna-text-secondary);
+  margin-bottom: var(--anna-space-4);
+}
+
+/* ==========================================================================
+   LOADING STATES
+   ========================================================================== */
+
+.anna-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--anna-space-8);
+}
+
+.anna-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--anna-border);
+  border-top-color: var(--anna-primary);
+  border-radius: var(--anna-radius-full);
+  animation: anna-spin 1s linear infinite;
+}
+
+.anna-loading-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--anna-bg-tertiary) 25%,
+    var(--anna-border) 50%,
+    var(--anna-bg-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: anna-loading-shimmer 1.5s infinite;
+  border-radius: var(--anna-radius);
+  height: 1em;
+}
+
+@keyframes anna-loading-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ==========================================================================
+   CONFIRMATION DIALOGS
+   ========================================================================== */
+
+.anna-confirm-dialog {
+  background: var(--anna-bg-primary);
+  border: 1px solid var(--anna-border);
+  border-radius: var(--anna-radius-xl);
+  padding: var(--anna-space-6);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.anna-confirm-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--anna-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto var(--anna-space-4);
+}
+
+.anna-confirm-icon-warning {
+  background: var(--anna-warning-light);
+  color: var(--anna-warning);
+}
+
+.anna-confirm-icon-danger {
+  background: var(--anna-danger-light);
+  color: var(--anna-danger);
+}
+
+.anna-confirm-title {
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: var(--anna-space-2);
+}
+
+.anna-confirm-message {
+  text-align: center;
+  color: var(--anna-text-secondary);
+  margin-bottom: var(--anna-space-6);
+}
+
+.anna-confirm-actions {
+  display: flex;
+  gap: var(--anna-space-3);
+}
+
+.anna-confirm-actions .anna-btn {
+  flex: 1;
+}
+
+/* ==========================================================================
+   RESPONSIVE UTILITIES
+   ========================================================================== */
+
+@media (max-width: 576px) {
+  .anna-day-status {
+    flex-wrap: wrap;
+  }
+  
+  .anna-day-status-divider {
+    display: none;
+  }
+  
+  .anna-day-status-item {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .anna-transaction-actions {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .anna-navbar-nav {
+    flex-wrap: wrap;
+  }
+  
+  .anna-role-indicator {
+    font-size: 0.625rem;
+    padding: var(--anna-space-1) var(--anna-space-2);
+  }
+}

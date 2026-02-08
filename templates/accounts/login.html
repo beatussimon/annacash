@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Ingia - ANNA{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-header bg-white text-center py-4">
+                <h3 class="mb-0">
+                    <i class="bi bi-cash-stack text-primary"></i> ANNA
+                </h3>
+                <p class="text-muted mb-0">Juu ya Mfumo wa Fedha</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Barua pepe</label>
+                        <input type="email" name="username" id="id_username" 
+                               class="form-control{% if form.username.errors %}is-invalid{% endif %}"
+                               required autofocus>
+                        {% if form.username.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.username.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">Nenosiri</label>
+                        <input type="password" name="password" id="id_password"
+                               class="form-control{% if form.password.errors %}is-invalid{% endif %}"
+                               required>
+                        {% if form.password.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.password.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="remember" id="id_remember" class="form-check-input">
+                        <label for="id_remember" class="form-check-label">Nikumbuke</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-anna w-100 py-2">
+                        <i class="bi bi-box-arrow-in-right"></i> Ingia
+                    </button>
+                </form>
+            </div>
+            <div class="card-footer bg-white text-center py-3">
+                <a href="#" class="text-muted">Umesahau nenosiri?</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load permissions %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+    <div>
+        <h4 class="mb-1">
+            <i class="bi bi-person text-primary"></i> {{ membership.user.get_full_name }}
+        </h4>
+        <p class="text-muted mb-0">{{ membership.group.name }}</p>
+    </div>
+    <div class="d-flex gap-2 mt-3 mt-md-0">
+        <a href="{% url 'dashboard:mchezo' group_id=membership.group.id %}" class="anna-btn anna-btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="anna-card">
+            <div class="anna-card-header px-4 py-3 border-bottom">
+                <h5 class="mb-0">Member Info</h5>
+            </div>
+            <div class="anna-card-body">
+                <div class="mb-3">
+                    <small class="text-muted">Name</small>
+                    <div class="fw-medium">{{ membership.user.get_full_name }}</div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Email</small>
+                    <div class="fw-medium">{{ membership.user.email }}</div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Phone</small>
+                    <div class="fw-medium">{{ membership.phone_number|default:"-" }}</div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Status</small>
+                    <div>
+                        {% if membership.status == 'active' %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-secondary">{{ membership.status|title }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Payout Order</small>
+                    <div class="fw-medium">#{{ membership.payout_order|default:"-" }}</div>
+                </div>
+                <div class="mb-0">
+                    <small class="text-muted">Joined</small>
+                    <div class="fw-medium">{{ membership.join_date|date:"M d, Y" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="anna-card mb-4">
+            <div class="anna-card-header px-4 py-3 border-bottom">
+                <h5 class="mb-0">Contributions</h5>
+            </div>
+            <div class="anna-card-body p-0">
+                {% if contributions %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contrib in contributions %}
+                            <tr>
+                                <td>{{ contrib.contribution_date|date:"M d, Y" }}</td>
+                                <td>{% format_tzs contrib.amount %}</td>
+                                <td>{{ contrib.payment_method }}</td>
+                                <td>
+                                    {% if contrib.status == 'completed' %}
+                                    <span class="badge bg-success">Completed</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ contrib.status|title }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="anna-empty-state py-4">
+                    <p class="text-muted mb-0">No contributions yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="anna-card">
+            <div class="anna-card-header px-4 py-3 border-bottom">
+                <h5 class="mb-0">Payouts</h5>
+            </div>
+            <div class="anna-card-body p-0">
+                {% if payouts %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payout in payouts %}
+                            <tr>
+                                <td>{{ payout.completed_date|date:"M d, Y" }}</td>
+                                <td>{% format_tzs payout.amount %}</td>
+                                <td>{{ payout.payment_method }}</td>
+                                <td>
+                                    {% if payout.status == 'completed' %}
+                                    <span class="badge bg-success">Completed</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ payout.status|title }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="anna-empty-state py-4">
+                    <p class="text-muted mb-0">No payouts yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

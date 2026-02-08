@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings - ANNA{% endblock %}
+
+{% block content %}
+{# Header #}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <h2 class="mb-2"><i class="bi bi-gear"></i> Settings</h2>
+                        <p class="text-muted mb-0">Manage your ANNA account preferences.</p>
+                    </div>
+                    <div class="mt-3 mt-md-0">
+                        <a href="/" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-arrow-left"></i> Back Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    {# Appearance Settings #}
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-palette"></i> Appearance</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Theme</label>
+                    <p class="text-muted small">Choose your preferred color scheme.</p>
+                    
+                    <div class="d-flex gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="theme" id="themeLight" value="light">
+                            <label class="form-check-label" for="themeLight">
+                                <i class="bi bi-sun-fill text-warning me-1"></i> Light
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="theme" id="themeDark" value="dark">
+                            <label class="form-check-label" for="themeDark">
+                                <i class="bi bi-moon-fill text-primary me-1"></i> Dark
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="theme" id="themeSystem" value="system">
+                            <label class="form-check-label" for="themeSystem">
+                                <i class="bi bi-gear-fill text-secondary me-1"></i> System
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Primary Color</label>
+                    <p class="text-muted small">Choose your primary brand color.</p>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm rounded-circle" style="width: 32px; height: 32px; background-color: #1a5f7a;"></button>
+                        <button class="btn btn-sm rounded-circle" style="width: 32px; height: 32px; background-color: #159895;"></button>
+                        <button class="btn btn-sm rounded-circle" style="width: 32px; height: 32px; background-color: #57c5b6;"></button>
+                        <button class="btn btn-sm rounded-circle" style="width: 32px; height: 32px; background-color: #e74c3c;"></button>
+                        <button class="btn btn-sm rounded-circle" style="width: 32px; height: 32px; background-color: #27ae60;"></button>
+                        <button class="btn btn-sm rounded-circle" style="width: 32px; height: 32px; background-color: #9b59b6;"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <button class="btn btn-anna" id="saveThemeBtn">
+                    <i class="bi bi-check-circle"></i> Save Theme
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    {# Language Settings #}
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-globe"></i> Language</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Display Language</label>
+                    <p class="text-muted small">Choose your preferred language.</p>
+                    
+                    <select class="form-select">
+                        <option value="sw" selected>Swahili</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Number Format</label>
+                    <select class="form-select">
+                        <option value="tz" selected>Tanzania (1,234,567.89)</option>
+                        <option value="us">US (1,234,567.89)</option>
+                        <option value="eu">Europe (1.234.567,89)</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Currency</label>
+                    <select class="form-select">
+                        <option value="tzs" selected>TZS (Tanzanian Shilling)</option>
+                        <option value="usd">USD (US Dollar)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <button class="btn btn-anna">
+                    <i class="bi bi-check-circle"></i> Save Language
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    {# Notifications Settings #}
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-bell"></i> Notifications</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                        <label class="form-check-label" for="emailNotifications">Email Notifications</label>
+                    </div>
+                    <small class="text-muted">Receive updates via email</small>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="smsNotifications" checked>
+                        <label class="form-check-label" for="smsNotifications">SMS Notifications</label>
+                    </div>
+                    <small class="text-muted">Receive updates via SMS</small>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="pushNotifications">
+                        <label class="form-check-label" for="pushNotifications">Push Notifications</label>
+                    </div>
+                    <small class="text-muted">Receive browser notifications</small>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Transaction Alerts</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="transactionAlerts" checked>
+                        <label class="form-check-label" for="transactionAlerts">
+                            Notify on transactions
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <button class="btn btn-anna">
+                    <i class="bi bi-check-circle"></i> Save Notifications
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    {# Security Settings #}
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-shield-lock"></i> Security</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Session Timeout</label>
+                    <select class="form-select">
+                        <option value="30">30 minutes</option>
+                        <option value="60" selected>1 hour</option>
+                        <option value="120">2 hours</option>
+                        <option value="480">8 hours</option>
+                    </select>
+                    <small class="text-muted">Auto logout after inactivity</small>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="twoFactorAuth">
+                        <label class="form-check-label" for="twoFactorAuth">Two-Factor Authentication</label>
+                    </div>
+                    <small class="text-muted">Add extra security to your account</small>
+                </div>
+                
+                <div class="mb-3">
+                    <a href="{% url 'accounts:password_change' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-key"></i> Change Password
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <button class="btn btn-anna">
+                    <i class="bi bi-check-circle"></i> Save Security
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    {# Account Info #}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-person"></i> Account Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Full Name</label>
+                            <input type="text" class="form-control" value="{{ user.get_full_name }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Phone</label>
+                            <input type="tel" class="form-control" value="{{ user.phone_number|default:'Not set' }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Member Since</label>
+                            <input type="text" class="form-control" value="{{ user.date_joined|date:'F Y' }}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{% url 'accounts:profile' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-pencil"></i> Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# JavaScript for Theme Settings #}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const themeRadios = document.querySelectorAll('input[name="theme"]');
+        const saveThemeBtn = document.getElementById('saveThemeBtn');
+        
+        // Check current theme and set radio button
+        const savedTheme = localStorage.getItem('anna-theme') || 'system';
+        document.querySelector(`input[name="theme"][value="${savedTheme}"]`).checked = true;
+        
+        // Handle system preference
+        function getSystemTheme() {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        
+        // Save theme preference
+        saveThemeBtn.addEventListener('click', function() {
+            const selectedTheme = document.querySelector('input[name="theme"]:checked').value;
+            const html = document.documentElement;
+            
+            if (selectedTheme === 'system') {
+                localStorage.removeItem('anna-theme');
+                const systemTheme = getSystemTheme();
+                html.setAttribute('data-theme', systemTheme);
+            } else {
+                localStorage.setItem('anna-theme', selectedTheme);
+                html.setAttribute('data-theme', selectedTheme);
+            }
+            
+            // Show success message
+            alert('Theme saved successfully!');
+        });
+        
+        // Preview theme on radio change
+        themeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                const html = document.documentElement;
+                const theme = this.value === 'system' ? getSystemTheme() : this.value;
+                html.setAttribute('data-theme', theme);
+            });
+        });
+    });
+</script>
+{% endblock %}

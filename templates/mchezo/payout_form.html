@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load permissions %}
+
+{% block title %}{{ page_title }} - {{ group.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="anna-card">
+            <div class="anna-card-header px-4 py-3 border-bottom">
+                <h5 class="mb-0">
+                    <i class="bi bi-gift text-warning me-2"></i> {{ page_title }}
+                </h5>
+            </div>
+            <form method="post" class="anna-card-body">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="anna-alert anna-alert-danger mb-4">
+                    {% for error in form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="anna-alert anna-alert-info mb-4">
+                    <i class="bi bi-info-circle anna-alert-icon"></i>
+                    <div class="anna-alert-content">
+                        <p class="mb-0">Recording a payout for Cycle #{{ cycle.cycle_number }}. Select a member who hasn't received their payout yet.</p>
+                    </div>
+                </div>
+                
+                {% for field in form %}
+                <div class="anna-form-group">
+                    <label class="anna-form-label" for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ field }}
+                    
+                    {% if field.help_text %}
+                    <small class="text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    
+                    {% for error in field.errors %}
+                    <div class="anna-form-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{% url 'dashboard:mchezo' group_id=group.id %}" class="anna-btn anna-btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="anna-btn anna-btn-warning">
+                        <i class="bi bi-check"></i> Record Payout
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

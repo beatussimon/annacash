@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load permissions %}
+
+{% block title %}Delete Transaction - {{ transaction.transaction_code }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="anna-card">
+            <div class="anna-card-header px-4 py-3 border-bottom">
+                <h5 class="mb-0 text-danger">
+                    <i class="bi bi-trash me-2"></i> Delete Transaction
+                </h5>
+            </div>
+            <div class="anna-card-body">
+                <div class="anna-alert anna-alert-danger mb-4">
+                    <i class="bi bi-exclamation-triangle anna-alert-icon"></i>
+                    <div class="anna-alert-content">
+                        <p class="anna-alert-title">Are you sure?</p>
+                        <p class="mb-0">This action cannot be undone. The transaction will be soft-deleted and can be restored by an admin.</p>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <strong>Transaction:</strong> {{ transaction.transaction_code }}<br>
+                    <strong>Type:</strong> {{ transaction.get_transaction_type_display }}<br>
+                    <strong>Amount:</strong> {% format_tzs transaction.amount %}<br>
+                    <strong>Date:</strong> {{ transaction.created_at|date:"M d, Y H:i" }}
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'dashboard:wakala' wakala_id=transaction.wakala.id %}" class="anna-btn anna-btn-secondary">
+                            Cancel
+                        </a>
+                        <button type="submit" class="anna-btn anna-btn-danger">
+                            <i class="bi bi-trash"></i> Delete Transaction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

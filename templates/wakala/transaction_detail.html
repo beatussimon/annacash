@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load permissions %}
+
+{% block title %}{{ page_title }} - {{ wakala.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="anna-card mb-4">
+            <div class="anna-card-header px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-receipt me-2"></i> Transaction Details
+                </h5>
+                <div>
+                    <a href="{% url 'dashboard:wakala' wakala_id=wakala.id %}" class="anna-btn anna-btn-secondary anna-btn-sm">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </a>
+                    {% can_edit_transaction user transaction as can_edit %}
+                    {% if can_edit %}
+                    <a href="{% url 'wakala:edit_transaction' wakala_id=wakala.id transaction_id=transaction.id %}" class="anna-btn anna-btn-primary anna-btn-sm">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="anna-card-body">
+                {# Transaction Header #}
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h4 class="mb-1">{{ transaction.transaction_code }}</h4>
+                        <span class="anna-status anna-status-{{ transaction.status }}">
+                            <span class="anna-status-dot"></span>
+                            {{ transaction.status|title }}
+                        </span>
+                    </div>
+                    <div class="text-end">
+                        <h3 class="mb-0 {% if transaction.transaction_type == 'deposit' %}text-success{% else %}text-danger{% endif %}">
+                            {% if transaction.transaction_type == 'deposit' %}+{% else %}-{% endif %}
+                            {% format_tzs transaction.amount %}
+                        </h3>
+                        <small class="text-muted">{{ transaction.transaction_timestamp|date:"M d, Y H:i" }}</small>
+                    </div>
+                </div>
+                
+                {# Transaction Details #}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="anna-info-item">
+                            <small class="text-muted">Type</small>
+                            <div class="fw-medium">{{ transaction.get_transaction_type_display }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="anna-info-item">
+                            <small class="text-muted">Payment Method</small>
+                            <div class="fw-medium">{{ transaction.payment_method }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="anna-info-item">
+                            <small class="text-muted">Customer Name</small>
+                            <div class="fw-medium">{{ transaction.customer_name|default:"-" }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="anna-info-item">
+                            <small class="text-muted">Customer Phone</small>
+                            <div class="fw-medium">{{ transaction.customer_phone|default:"-" }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="anna-info-item">
+                            <small class="text-muted">Reference Number</small>
+                            <div class="fw-medium">{{ transaction.reference_number|default:"-" }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="anna-info-item">
+                            <small class="text-muted">Network</small>
+                            <div class="fw-medium">{{ transaction.network|default:"-" }}</div>
+                        </div>
+                    </div>
+                    {% if transaction.description %}
+                    <div class="col-12">
+                        <div class="anna-info-item">
+                            <small class="text-muted">Description</small>
+                            <div class="fw-medium">{{ transaction.description }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if transaction.notes %}
+                    <div class="col-12">
+                        <div class="anna-info-item">
+                            <small class="text-muted">Notes</small>
+                            <div class="fw-medium">{{ transaction.notes }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {# Audit Trail #}
+                <hr class="my-4">
+                <h6 class="mb-3">Audit Trail</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>User</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ transaction.created_at|date:"M d, Y H:i:s" }}</td>
+                                <td>{{ transaction.created_by.get_full_name }}</td>
+                                <td>Created</td>
+                            </tr>
+                            {% if transaction.updated_at != transaction.created_at %}
+                            <tr>
+                                <td>{{ transaction.updated_at|date:"M d, Y H:i:s" }}</td>
+                                <td>{{ transaction.updated_by|default:transaction.created_by }}</td>
+                                <td>Updated</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

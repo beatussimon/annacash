@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load permissions %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+    <div>
+        <h4 class="mb-1">
+            <i class="bi bi-gear text-secondary"></i> {{ page_title }}
+        </h4>
+        <p class="text-muted mb-0">Configure group settings and preferences</p>
+    </div>
+    <div class="d-flex gap-2 mt-3 mt-md-0">
+        <a href="{% url 'dashboard:mchezo' group_id=group.id %}" class="anna-btn anna-btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="anna-card mb-4">
+                <div class="anna-card-header px-4 py-3 border-bottom">
+                    <h5 class="mb-0">Basic Information</h5>
+                </div>
+                <div class="anna-card-body">
+                    <div class="mb-3">
+                        <label class="anna-form-label" for="id_name">Group Name *</label>
+                        <input type="text" name="name" id="id_name" class="anna-form-input" value="{{ group.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="anna-form-label" for="id_description">Description</label>
+                        <textarea name="description" id="id_description" class="anna-form-input" rows="3">{{ group.description }}</textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="anna-card mb-4">
+                <div class="anna-card-header px-4 py-3 border-bottom">
+                    <h5 class="mb-0">Contribution Settings</h5>
+                </div>
+                <div class="anna-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="anna-form-label" for="id_contribution_amount">Contribution Amount (TZS) *</label>
+                            <input type="number" name="contribution_amount" id="id_contribution_amount" class="anna-form-input" value="{{ group.contribution_amount }}" required min="100">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="anna-form-label" for="id_contribution_frequency">Frequency *</label>
+                            <select name="contribution_frequency" id="id_contribution_frequency" class="anna-form-input">
+                                <option value="daily" {% if group.contribution_frequency == 'daily' %}selected{% endif %}>Daily</option>
+                                <option value="weekly" {% if group.contribution_frequency == 'weekly' %}selected{% endif %}>Weekly</option>
+                                <option value="biweekly" {% if group.contribution_frequency == 'biweekly' %}selected{% endif %}>Bi-weekly</option>
+                                <option value="monthly" {% if group.contribution_frequency == 'monthly' %}selected{% endif %}>Monthly</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="anna-form-label" for="id_max_members">Max Members *</label>
+                            <input type="number" name="max_members" id="id_max_members" class="anna-form-input" value="{{ group.max_members }}" required min="2" max="100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="anna-card mb-4">
+                <div class="anna-card-header px-4 py-3 border-bottom">
+                    <h5 class="mb-0">Group Status</h5>
+                </div>
+                <div class="anna-card-body">
+                    <div class="form-check form-switch mb-3">
+                        <input type="checkbox" name="is_open" id="id_is_open" class="form-check-input" {% if group.is_open %}checked{% endif %}>
+                        <label class="form-check-label" for="id_is_open">
+                            Allow new members to join
+                        </label>
+                    </div>
+                    <small class="text-muted">
+                        {% if group.is_open %}
+                        New members can join this group at any time.
+                        {% else %}
+                        This group is closed for new members.
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'dashboard:mchezo' group_id=group.id %}" class="anna-btn anna-btn-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="anna-btn anna-btn-primary">
+                    <i class="bi bi-check"></i> Save Settings
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
