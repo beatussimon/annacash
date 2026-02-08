@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load permissions %}
 
 {% block title %}ANNA - Financial Operations Platform{% endblock %}
 
@@ -129,7 +130,7 @@
     {% endif %}
     
     {# Mchezo Cards # has_mchezo}
-    {% if_access %}
+    {% if has_mchezo_access %}
     {% for group in mchezo_groups %}
     <div class="col-md-6 col-lg-4">
         <a href="{% url 'dashboard:mchezo' group_id=group.id %}" class="text-decoration-none">

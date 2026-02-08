@@ -4,23 +4,26 @@
 {% block title %}Members - {{ group.name }}{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
-    <div>
-        <h4 class="mb-1">
-            <i class="bi bi-people text-primary"></i> {{ group.name }} - Members
-        </h4>
-        <p class="text-muted mb-0">{{ group.memberships.count }} active members</p>
-    </div>
-    <div class="d-flex gap-2 mt-3 mt-md-0">
-        <a href="{% url 'dashboard:mchezo' group_id=group.id %}" class="anna-btn anna-btn-secondary">
-            <i class="bi bi-arrow-left"></i> Back
-        </a>
-        {% can_manage_members user group as can_manage %}
-        {% if can_manage %}
-        <a href="{% url 'mchezo:add_member' group_id=group.id %}" class="anna-btn anna-btn-primary">
-            <i class="bi bi-plus-circle"></i> Add Member
-        </a>
-        {% endif %}
+{# Page Header #}
+<div class="anna-page-header">
+    <div class="d-flex justify-content-between align-items-start flex-wrap">
+        <div class="me-3">
+            <h4 class="anna-page-title">
+                <i class="bi bi-people text-primary"></i> {{ group.name }} - Members
+            </h4>
+            <p class="anna-page-subtitle">{{ group.memberships.count }} active members</p>
+        </div>
+        <div class="anna-page-actions">
+            <a href="{% url 'dashboard:mchezo' group_id=group.id %}" class="anna-btn anna-btn-secondary">
+                <i class="bi bi-arrow-left"></i> <span class="d-none d-sm-inline">Back</span>
+            </a>
+            {% can_manage_members user group as can_manage %}
+            {% if can_manage %}
+            <a href="{% url 'mchezo:add_member' group_id=group.id %}" class="anna-btn anna-btn-primary">
+                <i class="bi bi-plus-circle"></i> <span class="d-none d-sm-inline">Add Member</span>
+            </a>
+            {% endif %}
+        </div>
     </div>
 </div>
 
@@ -28,15 +31,15 @@
     <div class="anna-card-body p-0">
         {% if memberships %}
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
+            <table class="anna-table mb-0">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th style="width: 50px;">#</th>
                         <th>Member</th>
-                        <th>Phone</th>
-                        <th>Status</th>
-                        <th>Joined</th>
-                        {% if can_manage %}<th>Actions</th>{% endif %}
+                        <th class="d-none d-md-table-cell" style="width: 150px;">Phone</th>
+                        <th style="width: 100px;">Status</th>
+                        <th style="width: 100px;">Joined</th>
+                        <th style="width: 60px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,9 +50,9 @@
                         </td>
                         <td>
                             <div class="fw-medium">{{ membership.user.get_full_name }}</div>
-                            <small class="text-muted">{{ membership.user.email }}</small>
+                            <small class="text-muted d-md-none">{{ membership.phone_number|default:"" }}</small>
                         </td>
-                        <td>{{ membership.phone_number|default:"-" }}</td>
+                        <td class="d-none d-md-table-cell">{{ membership.phone_number|default:"-" }}</td>
                         <td>
                             {% if membership.status == 'active' %}
                             <span class="badge bg-success">Active</span>
@@ -70,6 +73,12 @@
                                 <i class="bi bi-pencil"></i>
                             </a>
                         </td>
+                        {% else %}
+                        <td>
+                            <a href="{% url 'mchezo:member_detail' group_id=group.id membership_id=membership.id %}" class="anna-btn anna-btn-sm anna-btn-icon" title="View">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
                         {% endif %}
                     </tr>
                     {% endfor %}
@@ -77,7 +86,7 @@
             </table>
         </div>
         {% else %}
-        <div class="anna-empty-state py-8">
+        <div class="anna-empty-state">
             <i class="bi bi-people anna-empty-state-icon"></i>
             <h6 class="anna-empty-state-title">No Members Yet</h6>
             <p class="anna-empty-state-message">Add members to start the group.</p>

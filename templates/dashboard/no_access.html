@@ -1,24 +1,26 @@
 {% extends 'base.html' %}
 
-{% block title %}Hakuna Ufikiaji - ANNA{% endblock %}
+{% block title %}No Access - ANNA{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-md-6 offset-md-3">
-        <div class="card text-center">
-            <div class="card-body py-5">
-                <i class="bi bi-lock-fill text-warning fs-1"></i>
-                <h3 class="mt-3">Huna Ufikiaji</h3>
-                <p class="text-muted my-3">
-                    Huna ruhusa ya kufikia ukurasa huu.
-                    Ufikiaji wako umekuwa kukataliwa.
+        <div class="anna-card text-center">
+            <div class="anna-card-body py-5">
+                <i class="bi bi-lock-fill text-warning d-block fs-1 mb-3"></i>
+                <h5 class="mb-2">No Access</h5>
+                <p class="text-muted mb-4">
+                    You don't have permission to access this page.
+                    Your access has been denied.
                 </p>
-                <a href="{% url 'dashboard:home' %}" class="btn btn-anna">
-                    <i class="bi bi-house"></i> Nyumbani
-                </a>
-                <a href="{% url 'accounts:logout' %}" class="btn btn-outline-secondary">
-                    <i class="bi bi-box-arrow-right"></i> Toka
-                </a>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <a href="{% url 'dashboard:home' %}" class="anna-btn anna-btn-primary">
+                        <i class="bi bi-house"></i> Home
+                    </a>
+                    <a href="{% url 'accounts:logout' %}" class="anna-btn anna-btn-secondary">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </div>
             </div>
         </div>
     </div>

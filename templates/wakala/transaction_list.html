@@ -4,23 +4,26 @@
 {% block title %}Transactions - {{ wakala.name }}{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
-    <div>
-        <h4 class="mb-1">
-            <i class="bi bi-receipt text-primary"></i> {{ wakala.name }} - Transactions
-        </h4>
-        <p class="text-muted mb-0">All financial transactions</p>
-    </div>
-    <div class="d-flex gap-2 mt-3 mt-md-0">
-        <a href="{% url 'dashboard:wakala' wakala_id=wakala.id %}" class="anna-btn anna-btn-secondary">
-            <i class="bi bi-arrow-left"></i> Back
-        </a>
-        {% can_record_transaction user wakala as can_record %}
-        {% if can_record %}
-        <a href="{% url 'wakala:transaction_create' wakala_id=wakala.id %}" class="anna-btn anna-btn-primary">
-            <i class="bi bi-plus-circle"></i> New Transaction
-        </a>
-        {% endif %}
+{# Page Header #}
+<div class="anna-page-header">
+    <div class="d-flex justify-content-between align-items-start flex-wrap">
+        <div class="me-3">
+            <h4 class="anna-page-title">
+                <i class="bi bi-receipt text-primary"></i> {{ wakala.name }} - Transactions
+            </h4>
+            <p class="anna-page-subtitle">All financial transactions</p>
+        </div>
+        <div class="anna-page-actions">
+            <a href="{% url 'dashboard:wakala' wakala_id=wakala.id %}" class="anna-btn anna-btn-secondary">
+                <i class="bi bi-arrow-left"></i> <span class="d-none d-sm-inline">Back</span>
+            </a>
+            {% can_record_transaction user wakala as can_record %}
+            {% if can_record %}
+            <a href="{% url 'wakala:transaction_create' wakala_id=wakala.id %}" class="anna-btn anna-btn-primary">
+                <i class="bi bi-plus-circle"></i> <span class="d-none d-sm-inline">New Transaction</span>
+            </a>
+            {% endif %}
+        </div>
     </div>
 </div>
 
@@ -28,17 +31,17 @@
     <div class="anna-card-body p-0">
         {% if transactions %}
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
+            <table class="anna-table mb-0">
                 <thead>
                     <tr>
-                        <th>Code</th>
-                        <th>Type</th>
-                        <th>Amount</th>
+                        <th style="width: 100px;">Code</th>
+                        <th style="width: 100px;">Type</th>
+                        <th style="width: 120px;">Amount</th>
                         <th>Customer</th>
-                        <th>Method</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                        {% can_edit_transaction user transaction as can_edit %}{% if can_edit %}<th>Actions</th>{% endif %}
+                        <th class="d-none d-md-table-cell" style="width: 120px;">Method</th>
+                        <th style="width: 140px;">Date</th>
+                        <th style="width: 90px;">Status</th>
+                        <th style="width: 60px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,23 +57,20 @@
                                 {{ transaction.get_transaction_type_display }}
                             </span>
                         </td>
-                        <td>{% format_tzs transaction.amount %}</td>
+                        <td class="anna-amount">{% format_tzs transaction.amount %}</td>
                         <td>{{ transaction.customer_name|default:"-" }}</td>
-                        <td>{{ transaction.payment_method }}</td>
-                        <td>{{ transaction.created_at|date:"M d, Y H:i" }}</td>
+                        <td class="d-none d-md-table-cell">{{ transaction.payment_method }}</td>
+                        <td>{{ transaction.created_at|date:"M d, H:i" }}</td>
                         <td>
                             <span class="badge {% if transaction.status == 'completed' %}bg-success{% elif transaction.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
                                 {{ transaction.status|title }}
                             </span>
                         </td>
-                        {% can_edit_transaction user transaction as can_edit %}
-                        {% if can_edit %}
                         <td>
-                            <a href="{% url 'wakala:edit_transaction' wakala_id=wakala.id transaction_id=transaction.id %}" class="anna-btn anna-btn-sm anna-btn-icon" title="Edit">
-                                <i class="bi bi-pencil"></i>
+                            <a href="{% url 'wakala:transaction_detail' wakala_id=wakala.id transaction_id=transaction.id %}" class="anna-btn anna-btn-sm anna-btn-icon" title="View">
+                                <i class="bi bi-eye"></i>
                             </a>
                         </td>
-                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -83,10 +83,15 @@
         </div>
         {% endif %}
         {% else %}
-        <div class="anna-empty-state py-8">
+        <div class="anna-empty-state">
             <i class="bi bi-receipt anna-empty-state-icon"></i>
             <h6 class="anna-empty-state-title">No Transactions</h6>
             <p class="anna-empty-state-message">No transactions have been recorded yet.</p>
+            {% if can_record %}
+            <a href="{% url 'wakala:transaction_create' wakala_id=wakala.id %}" class="anna-btn anna-btn-primary">
+                <i class="bi bi-plus-circle"></i> First Transaction
+            </a>
+            {% endif %}
         </div>
         {% endif %}
     </div>

@@ -3,12 +3,23 @@
 {% block title %}{{ page_title }} - {{ group.name }}{% endblock %}
 
 {% block content %}
+<div class="anna-page-header">
+    <div class="d-flex justify-content-between align-items-start flex-wrap">
+        <div class="me-3">
+            <h4 class="anna-page-title">
+                <i class="bi bi-cash-coin text-success"></i> {{ page_title }}
+            </h4>
+            <p class="anna-page-subtitle">{{ group.name }}</p>
+        </div>
+    </div>
+</div>
+
 <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-lg-6 col-md-8">
         <div class="anna-card">
-            <div class="anna-card-header px-4 py-3 border-bottom">
-                <h5 class="mb-0">
-                    <i class="bi bi-cash-coin text-success me-2"></i> {{ page_title }}
+            <div class="anna-card-header">
+                <h5 class="anna-card-title">
+                    <i class="bi bi-cash-coin text-success me-2"></i> Record Contribution
                 </h5>
             </div>
             <form method="post" class="anna-card-body">
@@ -22,12 +33,14 @@
                 </div>
                 {% endif %}
                 
+                {% if cycle %}
                 <div class="anna-alert anna-alert-info mb-4">
                     <i class="bi bi-info-circle anna-alert-icon"></i>
                     <div class="anna-alert-content">
                         <p class="mb-0">Cycle #{{ cycle.cycle_number }} is active. Recording a contribution for a member.</p>
                     </div>
                 </div>
+                {% endif %}
                 
                 {% for field in form %}
                 <div class="anna-form-group">
@@ -49,7 +62,7 @@
                 
                 <div class="d-flex justify-content-end gap-2 mt-4">
                     <a href="{% url 'dashboard:mchezo' group_id=group.id %}" class="anna-btn anna-btn-secondary">
-                        Cancel
+                        <i class="bi bi-x"></i> Cancel
                     </a>
                     <button type="submit" class="anna-btn anna-btn-success">
                         <i class="bi bi-check"></i> Record Contribution

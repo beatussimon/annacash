@@ -1,62 +1,63 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashibodi ya Msimamizi - ANNA{% endblock %}
+{% block title %}Admin Dashboard - ANNA{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h2 class="mb-3"><i class="bi bi-speedometer2"></i> Dashibodi ya Msimamizi</h2>
-        <p class="text-muted">Maelezo ya mfumo wote wa ANNA.</p>
+{# Page Header #}
+<div class="anna-page-header">
+    <div class="d-flex justify-content-between align-items-start flex-wrap">
+        <div class="me-3">
+            <h4 class="anna-page-title">
+                <i class="bi bi-speedometer2 text-primary"></i> Admin Dashboard
+            </h4>
+            <p class="anna-page-subtitle">System overview and management for ANNA platform.</p>
+        </div>
+        <div class="anna-page-actions">
+            <a href="/" class="anna-btn anna-btn-secondary">
+                <i class="bi bi-house"></i> Home
+            </a>
+            <a href="/admin/" class="anna-btn anna-btn-primary">
+                <i class="bi bi-gear"></i> Django Admin
+            </a>
+        </div>
     </div>
 </div>
 
 {# Stats Row #}
-<div class="row g-4 mb-4">
+<div class="row g-3 mb-4">
     <div class="col-md-4">
-        <div class="card stat-card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="text-muted mb-0">Jumla ya Watumiaji</p>
-                        <h3 class="mb-0">{{ total_users }}</h3>
-                    </div>
-                    <div class="bg-primary bg-opacity-10 p-3 rounded">
-                        <i class="bi bi-people fs-2 text-primary"></i>
-                    </div>
+        <div class="anna-kpi-card">
+            <div class="anna-kpi-card-header">
+                <span class="anna-kpi-label">Total Users</span>
+                <div class="anna-kpi-icon anna-kpi-icon-primary">
+                    <i class="bi bi-people"></i>
                 </div>
             </div>
+            <div class="anna-kpi-value">{{ total_users }}</div>
         </div>
     </div>
     
     <div class="col-md-4">
-        <div class="card stat-card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="text-muted mb-0">Wakala Zilizofungwa</p>
-                        <h3 class="mb-0">{{ total_wakalas }}</h3>
-                    </div>
-                    <div class="bg-success bg-opacity-10 p-3 rounded">
-                        <i class="bi bi-shop fs-2 text-success"></i>
-                    </div>
+        <div class="anna-kpi-card">
+            <div class="anna-kpi-card-header">
+                <span class="anna-kpi-label">Active Wakala</span>
+                <div class="anna-kpi-icon anna-kpi-icon-success">
+                    <i class="bi bi-shop"></i>
                 </div>
             </div>
+            <div class="anna-kpi-value">{{ total_wakalas }}</div>
         </div>
     </div>
     
     <div class="col-md-4">
-        <div class="card stat-card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="text-muted mb-0">Michezo ya Kusimama</p>
-                        <h3 class="mb-0">{{ total_groups }}</h3>
-                    </div>
-                    <div class="bg-danger bg-opacity-10 p-3 rounded">
-                        <i class="bi bi-people-fill fs-2 text-danger"></i>
-                    </div>
+        <div class="anna-kpi-card">
+            <div class="anna-kpi-card-header">
+                <span class="anna-kpi-label">Mchezo Groups</span>
+                <div class="anna-kpi-icon" style="background: #fee2e2; color: #dc2626;">
+                    <i class="bi bi-people"></i>
                 </div>
             </div>
+            <div class="anna-kpi-value">{{ total_groups }}</div>
         </div>
     </div>
 </div>
@@ -64,18 +65,37 @@
 {# Quick Links #}
 <div class="row g-4">
     <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-gear"></i> Usimamizi wa Mfumo</h5>
+        <div class="anna-card">
+            <div class="anna-card-header">
+                <h5 class="anna-card-title">
+                    <i class="bi bi-gear me-2"></i> System Management
+                </h5>
             </div>
-            <div class="card-body">
+            <div class="anna-card-body p-0">
                 <div class="list-group list-group-flush">
-                    <a href="/admin/" class="list-group-item list-group-item-action">
-                        <i class="bi bi-database me-2"></i> Usimamizi wa Database
+                    <a href="/admin/" class="anna-transaction-item list-group-item list-group-item-action">
+                        <i class="bi bi-database anna-transaction-icon anna-transaction-icon-deposit"></i>
+                        <div class="anna-transaction-content">
+                            <div class="anna-transaction-title">Database Admin</div>
+                            <div class="anna-transaction-meta">Manage all platform data</div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
                     </a>
-                    <a href="{% url 'accounts:user_list' %}" class="list-group-item list-group-item-action">
+                    <a href="{% url 'accounts:user_list' %}" class="anna-transaction-item list-group-item list-group-item-action">
+                        <i class="bi bi-people anna-transaction-icon anna-transaction-icon-deposit"></i>
+                        <div class="anna-transaction-content">
+                            <div class="anna-transaction-title">User Management</div>
+                            <div class="anna-transaction-meta">Manage user accounts and roles</div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
                     </a>
-                    <a href="{% url 'wakala:list' %}" class="list-group-item list-group-item-action">
+                    <a href="{% url 'wakala:list' %}" class="anna-transaction-item list-group-item list-group-item-action">
+                        <i class="bi bi-shop anna-transaction-icon anna-transaction-icon-deposit"></i>
+                        <div class="anna-transaction-content">
+                            <div class="anna-transaction-title">Wakala Management</div>
+                            <div class="anna-transaction-meta">Manage wakala businesses</div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
                     </a>
                 </div>
             </div>
@@ -83,22 +103,72 @@
     </div>
     
     <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Ripoti za Mfumo</h5>
+        <div class="anna-card">
+            <div class="anna-card-header">
+                <h5 class="anna-card-title">
+                    <i class="bi bi-clipboard-data me-2"></i> Reports & Analytics
+                </h5>
             </div>
-            <div class="card-body">
+            <div class="anna-card-body p-0">
                 <div class="list-group list-group-flush">
-                    <a href="{% url 'audit:reports' %}" class="list-group-item list-group-item-action">
-                        <i class="bi bi-graph-up me-2"></i> Takwimu za Mfumo
+                    <a href="{% url 'audit:reports' %}" class="anna-transaction-item list-group-item list-group-item-action">
+                        <i class="bi bi-graph-up anna-transaction-icon anna-transaction-icon-deposit"></i>
+                        <div class="anna-transaction-content">
+                            <div class="anna-transaction-title">System Analytics</div>
+                            <div class="anna-transaction-meta">View system statistics and trends</div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
                     </a>
-                    <a href="{% url 'audit:log' %}" class="list-group-item list-group-item-action">
+                    <a href="{% url 'audit:log' %}" class="anna-transaction-item list-group-item list-group-item-action">
+                        <i class="bi bi-list-check anna-transaction-icon anna-transaction-icon-deposit"></i>
+                        <div class="anna-transaction-content">
+                            <div class="anna-transaction-title">Audit Log</div>
+                            <div class="anna-transaction-meta">View system activity logs</div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
                     </a>
-                    <a href="{% url 'audit:alerts' %}" class="list-group-item list-group-item-action">
+                    <a href="{% url 'audit:alerts' %}" class="anna-transaction-item list-group-item list-group-item-action">
+                        <i class="bi bi-exclamation-triangle anna-transaction-icon anna-transaction-icon-withdrawal"></i>
+                        <div class="anna-transaction-content">
+                            <div class="anna-transaction-title">System Alerts</div>
+                            <div class="anna-transaction-meta">View and manage alerts</div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
                     </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+{# Recent Activity #}
+{% if recent_audit_logs %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="anna-card">
+            <div class="anna-card-header">
+                <h5 class="anna-card-title">
+                    <i class="bi bi-clock-history me-2"></i> Recent Activity
+                </h5>
+            </div>
+            <div class="anna-card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for log in recent_audit_logs|slice:":10" %}
+                    <div class="anna-transaction-item">
+                        <div class="anna-transaction-icon {% if log.action == 'create' %}anna-transaction-icon-deposit{% elif log.action == 'delete' %}anna-transaction-icon-withdrawal{% else %}anna-transaction-icon-deposit{% endif %}">
+                            <i class="bi bi-{% if log.action == 'create' %}plus{% elif log.action == 'delete' %}trash{% elif log.action == 'update' %}pencil{% else %}info{% endif %}"></i>
+                        </div>
+                        <div class="anna-transaction-content">
+                            <div class="anna-transaction-title">{{ log.action|title }} - {{ log.model }}</div>
+                            <div class="anna-transaction-meta">{{ log.user.get_full_name|default:log.user }} • {{ log.created_at|timesince }} ago</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}

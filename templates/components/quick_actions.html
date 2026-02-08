@@ -7,10 +7,10 @@
     {% with first_wakala=wakalas.0 %}
     {% can_record_transaction user first_wakala as can_record_txn %}
     {% if can_record_txn %}
-    <div class="col-md-3 col-sm-6">
-        <a href="{% url 'wakala:transaction_create' wakala_id=first_wakala.id %}" class="btn btn-outline-primary w-100 py-3">
-            <i class="bi bi-plus-circle d-block fs-4"></i>
-            New Transaction
+    <div class="col-6 col-md-3">
+        <a href="{% url 'wakala:transaction_create' wakala_id=first_wakala.id %}" class="anna-quick-action anna-quick-action-deposit text-decoration-none">
+            <i class="bi bi-plus-circle"></i>
+            <span>New Transaction</span>
         </a>
     </div>
     {% endif %}
@@ -21,34 +21,34 @@
     {% with first_group=mchezo_groups.0 %}
     {% can_manage_members user first_group as can_manage %}
     {% if can_manage %}
-    <div class="col-md-3 col-sm-6">
-        <a href="{% url 'mchezo:add_member' group_id=first_group.id %}" class="btn btn-outline-success w-100 py-3">
-            <i class="bi bi-person-plus d-block fs-4"></i>
-            Add Member
+    <div class="col-6 col-md-3">
+        <a href="{% url 'mchezo:add_member' group_id=first_group.id %}" class="anna-quick-action text-decoration-none" style="--anna-success: #10b981;">
+            <i class="bi bi-person-plus"></i>
+            <span>Add Member</span>
         </a>
     </div>
     {% endif %}
     {% endwith %}
     {% endif %}
     
-    <div class="col-md-3 col-sm-6">
+    <div class="col-6 col-md-3">
         {% if user.is_staff %}
-        <a href="{% url 'audit:reports' %}" class="btn btn-outline-warning w-100 py-3">
-            <i class="bi bi-file-earmark-text d-block fs-4"></i>
-            Generate Report
+        <a href="{% url 'audit:reports' %}" class="anna-quick-action text-decoration-none" style="--anna-warning: #f59e0b;">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Reports</span>
         </a>
         {% else %}
-        <a href="{% url 'dashboard:app_switcher' %}" class="btn btn-outline-secondary w-100 py-3">
-            <i class="bi bi-grid-3x3-gap d-block fs-4"></i>
-            All Apps
+        <a href="{% url 'dashboard:app_switcher' %}" class="anna-quick-action text-decoration-none">
+            <i class="bi bi-grid-3x3-gap"></i>
+            <span>All Apps</span>
         </a>
         {% endif %}
     </div>
     
-    <div class="col-md-3 col-sm-6">
-        <a href="{% url 'dashboard:settings' %}" class="btn btn-outline-info w-100 py-3">
-            <i class="bi bi-gear d-block fs-4"></i>
-            Settings
+    <div class="col-6 col-md-3">
+        <a href="{% url 'dashboard:settings' %}" class="anna-quick-action text-decoration-none" style="--anna-info: #3b82f6;">
+            <i class="bi bi-gear"></i>
+            <span>Settings</span>
         </a>
     </div>
 </div>

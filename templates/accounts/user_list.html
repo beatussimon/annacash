@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Users - ANNA{% endblock %}
+
+{% block content %}
+{# Page Header #}
+<div class="anna-page-header">
+    <div class="d-flex justify-content-between align-items-start flex-wrap">
+        <div class="me-3">
+            <h4 class="anna-page-title">
+                <i class="bi bi-people text-primary"></i> Users
+            </h4>
+            <p class="anna-page-subtitle">{{ users|length }} user{{ users|length|pluralize }}</p>
+        </div>
+        <div class="anna-page-actions">
+            <a href="{% url 'dashboard:home' %}" class="anna-btn anna-btn-secondary">
+                <i class="bi bi-arrow-left"></i> <span class="d-none d-sm-inline">Back</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="anna-card">
+    <div class="anna-card-body p-0">
+        {% if users %}
+        <div class="table-responsive">
+            <table class="anna-table mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>User</th>
+                        <th class="d-none d-md-table-cell" style="width: 200px;">Email</th>
+                        <th style="width: 120px;">Role</th>
+                        <th style="width: 100px;">Status</th>
+                        <th style="width: 100px;">Joined</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary">#{{ forloop.counter }}</span>
+                        </td>
+                        <td>
+                            <div class="fw-medium">{{ user.get_full_name|default:user.email }}</div>
+                            <small class="text-muted d-md-none">{{ user.email }}</small>
+                        </td>
+                        <td class="d-none d-md-table-cell">{{ user.email }}</td>
+                        <td>
+                            {% if user.is_superuser %}
+                            <span class="badge bg-danger">Admin</span>
+                            {% elif user.is_staff %}
+                            <span class="badge bg-warning">Staff</span>
+                            {% else %}
+                            <span class="badge bg-secondary">User</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="anna-empty-state">
+            <i class="bi bi-people anna-empty-state-icon"></i>
+            <h6 class="anna-empty-state-title">No Users Found</h6>
+            <p class="anna-empty-state-message">There are no users to display.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
