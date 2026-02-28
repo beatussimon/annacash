@@ -27,11 +27,11 @@
     {% for group in mchezo_groups %}
     <div class="col-md-6 col-lg-4">
         <a href="{% url 'dashboard:mchezo' group_id=group.id %}" class="text-decoration-none">
-            <div class="anna-card anna-card-interactive h-100" style="border-left-color: #dc2626;">
+            <div class="anna-card anna-card-interactive anna-card-danger h-100">
                 <div class="anna-card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="d-flex align-items-center">
-                            <div class="anna-kpi-icon" style="background: #fee2e2; color: #dc2626;">
+                            <div class="anna-kpi-icon anna-kpi-icon-danger me-3">
                                 <i class="bi bi-people"></i>
                             </div>
                             <div>

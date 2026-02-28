@@ -76,7 +76,7 @@
     const forms = document.querySelectorAll('form');
     forms.forEach(function(form) {
         form.addEventListener('submit', function() {
-            const submitBtn = form.queryElement('button[type="submit"]');
+            const submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.disabled = true;
                 const originalText = submitBtn.innerHTML;
@@ -118,13 +118,27 @@
     /**
      * Auto-dismiss alerts after 5 seconds
      */
-    const alerts = document.querySelectorAll('.anna-alert');
+    const alerts = document.querySelectorAll('.alert');
     alerts.forEach(function(alert) {
         setTimeout(function() {
-            if (alert.classList.contains('fade-in')) {
-                const closeBtn = alert.querySelector('.btn-close');
-                if (closeBtn) {
-                    closeBtn.click();
+            // Re-check if alert is still in DOM before attempting to close
+            if (document.body.contains(alert)) {
+                try {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+                        const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                        if (bsAlert) {
+                            bsAlert.close();
+                        } else {
+                            alert.remove();
+                        }
+                    } else {
+                        alert.remove();
+                    }
+                } catch (err) {
+                    // Fallback to manual removal if Bootstrap close fails
+                    if (document.body.contains(alert)) {
+                        alert.remove();
+                    }
                 }
             }
         }, 5000);

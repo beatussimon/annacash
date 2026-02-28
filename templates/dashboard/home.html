@@ -14,9 +14,6 @@
             <p class="anna-page-subtitle">Karibu {{ user.get_full_name|default:"User" }}. Chagua programu unayotaka kutumia.</p>
         </div>
         <div class="anna-page-actions">
-            <a href="{% url 'dashboard:app_switcher' %}" class="anna-btn anna-btn-secondary">
-                <i class="bi bi-grid-3x3-gap"></i> All Apps
-            </a>
             <a href="{% url 'accounts:profile' %}" class="anna-btn anna-btn-primary">
                 <i class="bi bi-person"></i> Profile
             </a>
@@ -45,7 +42,7 @@
         <div class="anna-kpi-card">
             <div class="anna-kpi-card-header">
                 <span class="anna-kpi-label">Mchezo</span>
-                <div class="anna-kpi-icon" style="background: #fee2e2; color: #dc2626;">
+                <div class="anna-kpi-icon anna-kpi-icon-danger">
                     <i class="bi bi-people"></i>
                 </div>
             </div>
@@ -78,18 +75,9 @@
 </div>
 {% endif %}
 
-{# Quick Actions #}
-{% include 'components/quick_actions.html' %}
-
 {# Apps Section #}
 {% if has_wakala_access or has_mchezo_access %}
 <div class="row g-4 mb-4">
-    <div class="col-12">
-        <h5 class="mb-3">
-            <i class="bi bi-grid-3x3-gap me-2"></i>Your Apps
-        </h5>
-    </div>
-    
     {# Wakala Cards #}
     {% if has_wakala_access %}
     {% for wakala in wakalas %}
@@ -134,11 +122,11 @@
     {% for group in mchezo_groups %}
     <div class="col-md-6 col-lg-4">
         <a href="{% url 'dashboard:mchezo' group_id=group.id %}" class="text-decoration-none">
-            <div class="anna-card anna-card-interactive h-100" style="border-left-color: #dc2626;">
+            <div class="anna-card anna-card-interactive anna-card-danger h-100">
                 <div class="anna-card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="d-flex align-items-center">
-                            <div class="anna-kpi-icon" style="background: #fee2e2; color: #dc2626;">
+                            <div class="anna-kpi-icon anna-kpi-icon-danger">
                                 <i class="bi bi-people"></i>
                             </div>
                             <div>

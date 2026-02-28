@@ -8,7 +8,7 @@
         <h4 class="mb-1">
             <i class="bi bi-journal-text text-primary"></i> Audit Log
         </h4>
-        <p class="text-muted mb-0">System activity and changes</p>
+        <p class="text-muted mb-0">Recent system activity and changes (Last 100)</p>
     </div>
     <div class="d-flex gap-2 mt-3 mt-md-0">
         <a href="{% url 'dashboard:admin' %}" class="anna-btn anna-btn-secondary">
@@ -18,11 +18,34 @@
 </div>
 
 <div class="anna-card">
-    <div class="anna-card-body">
-        <div class="anna-empty-state py-8">
-            <i class="bi bi-journal-text anna-empty-state-icon"></i>
-            <h6 class="anna-empty-state-title">Audit Log</h6>
-            <p class="anna-empty-state-message">System audit trail will appear here.</p>
+    <div class="anna-card-body p-0">
+                        <thead>                        <th>Time</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Target</th>
+                        <th>Description</th>
+                        <th>IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td class="text-nowrap">{{ log.timestamp|date:"M d, Y H:i:s" }}</td>
+                        <td><strong>{{ log.user.get_full_name|default:log.user.email|default:"System" }}</strong></td>
+                        <td>
+                            <span class="badge bg-secondary">{{ log.get_action_display }}</span>
+                        </td>
+                        <td>{{ log.content_type.model|title|default:"-" }}</td>
+                        <td>{{ log.description }}</td>
+                        <td><small class="text-muted">{{ log.ip_address|default:"-" }}</small></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No audit logs found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

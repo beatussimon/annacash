@@ -51,15 +51,25 @@
     
     <div class="anna-day-status-item">
         <span class="anna-day-status-label">Opening</span>
-        <span class="anna-day-status-value">{% format_tzs open_day.opening_balance %}</span>
+        <div class="text-end">
+            <span class="anna-day-status-value">{% format_tzs open_day.opening_balance %}</span>
+            <div class="small text-muted" style="font-size: 0.7rem;">
+                C: {% format_tzs open_day.opening_cash %} | F: {% format_tzs open_day.opening_float %}
+            </div>
+        </div>
     </div>
     
-    {% if open_day.computed_closing_balance %}
+    {% if open_day.status == 'open' or open_day.status == 'closed' %}
     <div class="anna-day-status-divider d-none d-sm-block"></div>
     
     <div class="anna-day-status-item">
         <span class="anna-day-status-label">Computed</span>
-        <span class="anna-day-status-value">{% format_tzs open_day.computed_closing_balance %}</span>
+        <div class="text-end">
+            <span class="anna-day-status-value">{% format_tzs open_day.computed_closing_balance %}</span>
+            <div class="small text-muted" style="font-size: 0.7rem;">
+                C: {% format_tzs open_day.computed_closing_cash %} | F: {% format_tzs open_day.computed_closing_float %}
+            </div>
+        </div>
     </div>
     {% endif %}
     
@@ -128,6 +138,18 @@
     <div class="col-6 col-md-3">
         <div class="anna-kpi-card">
             <div class="anna-kpi-card-header">
+                <span class="anna-kpi-label">Est. Commission</span>
+                <div class="anna-kpi-icon anna-kpi-icon-warning">
+                    <i class="bi bi-coin"></i>
+                </div>
+            </div>
+            <div class="anna-kpi-value">{% format_tzs est_commission %}</div>
+            <div class="small text-muted" style="font-size: 0.7rem;">Est. from today's volume</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="anna-kpi-card">
+            <div class="anna-kpi-card-header">
                 <span class="anna-kpi-label">Transactions</span>
                 <div class="anna-kpi-icon anna-kpi-icon-primary">
                     <i class="bi bi-receipt"></i>
@@ -136,20 +158,84 @@
             <div class="anna-kpi-value">{{ today_transactions_count|default:"0" }}</div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="anna-kpi-card">
-            <div class="anna-kpi-card-header">
-                <span class="anna-kpi-label">Status</span>
-                <div class="anna-kpi-icon {% if open_day.status == 'open' %}anna-kpi-icon-success{% else %}anna-kpi-icon-warning{% endif %}">
-                    <i class="bi bi-circle-fill"></i>
-                </div>
+</div>
+
+{# Analytics Section #}
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="anna-card h-100">
+            <div class="anna-card-header">
+                <h5 class="anna-card-title">
+                    <i class="bi bi-graph-up me-2"></i> Peak Hour Analysis
+                </h5>
             </div>
-            <div class="anna-kpi-value" style="font-size: 1rem; font-weight: 600;">
-                {{ open_day.status|title|default:"Closed" }}
+            <div class="anna-card-body">
+                <canvas id="hourlyChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="anna-card h-100">
+            <div class="anna-card-header">
+                <h5 class="anna-card-title">
+                    <i class="bi bi-star me-2"></i> Top Customers (30d)
+                </h5>
+            </div>
+            <div class="anna-card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for customer in top_customers %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <div class="fw-bold">{{ customer.customer_name|default:customer.customer_phone }}</div>
+                            <small class="text-muted">{{ customer.count }} transactions</small>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">{% format_tzs customer.total_spent %}</span>
+                    </div>
+                    {% empty %}
+                    <div class="p-4 text-center text-muted">No customer data available</div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const hourlyData = {{ hourly_data_json|safe }};
+        const ctx = document.getElementById('hourlyChart').getContext('2d');
+        
+        const labels = Array.from({length: 24}, (_, i) => `${i}:00`);
+        const dataPoints = new Array(24).fill(0);
+        
+        hourlyData.forEach(item => {
+            dataPoints[item.hour] = item.count;
+        });
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Transaction Volume',
+                    data: dataPoints,
+                    backgroundColor: 'rgba(52, 152, 219, 0.5)',
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { display: false } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    });
+</script>
 
 {# Main Content Grid #}
 <div class="row g-4">
@@ -352,33 +438,40 @@
 {# Deposit Modal #}
 <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-success text-white">
                 <h5 class="modal-title" id="depositModalLabel">
-                    <i class="bi bi-plus-circle text-success"></i> New Deposit
+                    <i class="bi bi-plus-circle"></i> New Deposit
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{% url 'wakala:transaction_create' wakala_id=wakala.id %}" method="post" id="depositForm">
                 {% csrf_token %}
                 <input type="hidden" name="transaction_type" value="deposit">
                 <div class="modal-body">
                     <div class="anna-form-group">
-                        <label class="anna-form-label" for="deposit_amount">Amount (TZS) *</label>
-                        <input type="number" name="amount" id="deposit_amount" class="anna-form-input" required min="1" step="100" autofocus placeholder="Enter amount">
+                        <label class="anna-form-label fw-bold text-success" for="deposit_amount">Amount (TZS) *</label>
+                        <input type="number" name="amount" id="deposit_amount" class="anna-form-input form-control-lg mb-2" required min="0" step="any" autofocus placeholder="Enter amount">
+                        <div class="d-flex flex-wrap gap-1 mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary quick-amount-btn" data-amount="1000" data-target="deposit_amount">1k</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary quick-amount-btn" data-amount="2000" data-target="deposit_amount">2k</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary quick-amount-btn" data-amount="5000" data-target="deposit_amount">5k</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary quick-amount-btn" data-amount="10000" data-target="deposit_amount">10k</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary quick-amount-btn" data-amount="50000" data-target="deposit_amount">50k</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary quick-amount-btn" data-amount="100000" data-target="deposit_amount">100k</button>
+                        </div>
+                    </div>
+                    <div class="anna-form-group">
+                        <label class="anna-form-label" for="deposit_phone">Customer Phone</label>
+                        <input type="text" name="customer_phone" id="deposit_phone" class="anna-form-input turbo-phone" data-method-target="deposit_method" placeholder="07XX XXX XXX">
                     </div>
                     <div class="anna-form-group">
                         <label class="anna-form-label" for="deposit_customer">Customer Name</label>
                         <input type="text" name="customer_name" id="deposit_customer" class="anna-form-input" placeholder="Customer name">
                     </div>
                     <div class="anna-form-group">
-                        <label class="anna-form-label" for="deposit_phone">Customer Phone</label>
-                        <input type="text" name="customer_phone" id="deposit_phone" class="anna-form-input" placeholder="Customer phone">
-                    </div>
-                    <div class="anna-form-group">
                         <label class="anna-form-label" for="deposit_method">Payment Method *</label>
                         <select name="payment_method" id="deposit_method" class="anna-form-input" required>
-                            <option value="">-- Select --</option>
                             <option value="cash">Cash</option>
                             <option value="mobile_money">Mobile Money</option>
                             <option value="bank_transfer">Bank Transfer</option>
@@ -395,7 +488,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="anna-btn anna-btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="anna-btn anna-btn-success">
+                    <button type="submit" class="anna-btn anna-btn-success w-50">
                         <i class="bi bi-check"></i> Record Deposit
                     </button>
                 </div>
@@ -407,33 +500,40 @@
 {# Withdrawal Modal #}
 <div class="modal fade" id="withdrawalModal" tabindex="-1" aria-labelledby="withdrawalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="withdrawalModalLabel">
-                    <i class="bi bi-dash-circle text-danger"></i> New Withdrawal
+                    <i class="bi bi-dash-circle"></i> New Withdrawal
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{% url 'wakala:transaction_create' wakala_id=wakala.id %}" method="post" id="withdrawalForm">
                 {% csrf_token %}
                 <input type="hidden" name="transaction_type" value="withdrawal">
                 <div class="modal-body">
                     <div class="anna-form-group">
-                        <label class="anna-form-label" for="withdrawal_amount">Amount (TZS) *</label>
-                        <input type="number" name="amount" id="withdrawal_amount" class="anna-form-input" required min="1" step="100" autofocus placeholder="Enter amount">
+                        <label class="anna-form-label fw-bold text-danger" for="withdrawal_amount">Amount (TZS) *</label>
+                        <input type="number" name="amount" id="withdrawal_amount" class="anna-form-input form-control-lg mb-2" required min="0" step="any" autofocus placeholder="Enter amount">
+                        <div class="d-flex flex-wrap gap-1 mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary quick-amount-btn" data-amount="1000" data-target="withdrawal_amount">1k</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary quick-amount-btn" data-amount="2000" data-target="withdrawal_amount">2k</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary quick-amount-btn" data-amount="5000" data-target="withdrawal_amount">5k</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary quick-amount-btn" data-amount="10000" data-target="withdrawal_amount">10k</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary quick-amount-btn" data-amount="50000" data-target="withdrawal_amount">50k</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary quick-amount-btn" data-amount="100000" data-target="withdrawal_amount">100k</button>
+                        </div>
+                    </div>
+                    <div class="anna-form-group">
+                        <label class="anna-form-label" for="withdrawal_phone">Customer Phone</label>
+                        <input type="text" name="customer_phone" id="withdrawal_phone" class="anna-form-input turbo-phone" data-method-target="withdrawal_method" placeholder="07XX XXX XXX">
                     </div>
                     <div class="anna-form-group">
                         <label class="anna-form-label" for="withdrawal_customer">Customer Name</label>
                         <input type="text" name="customer_name" id="withdrawal_customer" class="anna-form-input" placeholder="Customer name">
                     </div>
                     <div class="anna-form-group">
-                        <label class="anna-form-label" for="withdrawal_phone">Customer Phone</label>
-                        <input type="text" name="customer_phone" id="withdrawal_phone" class="anna-form-input" placeholder="Customer phone">
-                    </div>
-                    <div class="anna-form-group">
                         <label class="anna-form-label" for="withdrawal_method">Payment Method *</label>
                         <select name="payment_method" id="withdrawal_method" class="anna-form-input" required>
-                            <option value="">-- Select --</option>
                             <option value="cash">Cash</option>
                             <option value="mobile_money">Mobile Money</option>
                             <option value="bank_transfer">Bank Transfer</option>
@@ -450,7 +550,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="anna-btn anna-btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="anna-btn anna-btn-danger">
+                    <button type="submit" class="anna-btn anna-btn-danger w-50">
                         <i class="bi bi-check"></i> Record Withdrawal
                     </button>
                 </div>
@@ -458,6 +558,35 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Quick amount buttons
+        document.querySelectorAll('.quick-amount-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const amount = this.dataset.amount;
+                const targetId = this.dataset.target;
+                document.getElementById(targetId).value = amount;
+                document.getElementById(targetId).focus();
+            });
+        });
+
+        // Turbo Phone detection
+        document.querySelectorAll('.turbo-phone').forEach(input => {
+            input.addEventListener('input', function() {
+                const phone = this.value.replace(/\D/g, '');
+                const targetMethodId = this.dataset.methodTarget;
+                const methodSelect = document.getElementById(targetMethodId);
+                
+                // Common TZ mobile prefixes
+                const mobilePrefixes = ['06', '07'];
+                if (phone.length >= 2 && mobilePrefixes.includes(phone.substring(0, 2))) {
+                    methodSelect.value = 'mobile_money';
+                }
+            });
+        });
+    });
+</script>
 {% endif %}
 
 {% endblock %}

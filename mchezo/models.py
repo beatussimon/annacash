@@ -4,6 +4,7 @@ Mchezo domain models for ANNA financial platform.
 This module contains all models for managing mchezo (rotating savings / ROSCA)
 including groups, cycles, memberships, contributions, and payouts.
 """
+
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
@@ -15,73 +16,82 @@ from core.models import AuditableModel
 class Group(AuditableModel):
     """
     A mchezo (rotating savings) group.
-    
+
     Groups are social financial circles where members contribute
     regularly and take turns receiving the pooled amount.
     """
+
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    
+
     # Group settings
     contribution_amount = models.DecimalField(
+        max_digits=15, decimal_places=2, validators=[MinValueValidator(100)]
+    )
+    # Social Fund and Fines (Common in Tanzania)
+    social_fund_contribution = models.DecimalField(
         max_digits=15,
         decimal_places=2,
-        validators=[MinValueValidator(100)]
+        default=0,
+        help_text="Fixed amount for 'Mfuko wa Jamii' per period",
     )
+    late_fine_amount = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        default=0,
+        help_text="Standard fine for late contributions",
+    )
+
     contribution_frequency = models.CharField(
         max_length=20,
         choices=[
-            ('daily', 'Daily'),
-            ('weekly', 'Weekly'),
-            ('biweekly', 'Bi-weekly'),
-            ('monthly', 'Monthly'),
+            ("daily", "Daily"),
+            ("weekly", "Weekly"),
+            ("biweekly", "Bi-weekly"),
+            ("monthly", "Monthly"),
         ],
-        default='weekly'
+        default="weekly",
     )
     max_members = models.PositiveIntegerField(default=10)
-    
+
     # Scheduling
     contribution_day = models.PositiveIntegerField(
-        help_text="Day of week (1=Monday, 7=Sunday) or day of month",
-        default=1
+        help_text="Day of week (1=Monday, 7=Sunday) or day of month", default=1
     )
     contribution_time = models.TimeField(default=timezone.now)
-    
+
     # Status
     is_active = models.BooleanField(default=True)
-    is_open = models.BooleanField(
-        default=True,
-        help_text="Allow new members to join"
-    )
-    
+    is_open = models.BooleanField(default=True, help_text="Allow new members to join")
+
     # Payout configuration
     payout_order_method = models.CharField(
         max_length=30,
         choices=[
-            ('random', 'Random'),
-            ('fixed', 'Fixed (members choose)'),
-            ('bidding', 'Bidding (highest bidder wins)'),
-            ('sequential', 'Sequential (first come, first served)'),
+            ("random", "Random"),
+            ("fixed", "Fixed (members choose)"),
+            ("bidding", "Bidding (highest bidder wins)"),
+            ("sequential", "Sequential (first come, first served)"),
         ],
-        default='random'
+        default="random",
     )
-    
+
     class Meta:
-        verbose_name = 'Group'
-        verbose_name_plural = 'Groups'
-        ordering = ['name']
-    
+        verbose_name = "Group"
+        verbose_name_plural = "Groups"
+        ordering = ["name"]
+
     def __str__(self):
         return self.name
-    
+
     def get_current_cycle(self):
         """Get the currently active cycle."""
-        return self.cycles.filter(status='active').first()
-    
+        return self.cycles.filter(status="active").first()
+
     def get_member_count(self):
         """Get the number of active members."""
-        return self.memberships.filter(status='active', is_deleted=False).count()
-    
+        return self.memberships.filter(status="active", is_deleted=False).count()
+
     def is_full(self):
         """Check if group is at max capacity."""
         return self.get_member_count() >= self.max_members
@@ -90,274 +100,285 @@ class Group(AuditableModel):
 class Membership(AuditableModel):
     """
     Membership in a mchezo group.
-    
+
     Links a user to a group with their role and position.
     """
+
     STATUS_CHOICES = [
-        ('active', 'Active'),
-        ('completed', 'Completed'),
-        ('withdrawn', 'Withdrawn'),
-        ('defaulted', 'Defaulted'),
+        ("active", "Active"),
+        ("completed", "Completed"),
+        ("withdrawn", "Withdrawn"),
+        ("defaulted", "Defaulted"),
     ]
-    
+
     group = models.ForeignKey(
-        Group,
-        on_delete=models.CASCADE,
-        related_name='memberships'
+        Group, on_delete=models.CASCADE, related_name="memberships"
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='mchezo_memberships'
+        related_name="mchezo_memberships",
     )
-    
+
     # Membership details
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="active")
     join_date = models.DateField(default=timezone.now)
     exit_date = models.DateField(blank=True, null=True)
-    
+
     # Position in payout order
     payout_order = models.PositiveIntegerField(
-        null=True,
-        blank=True,
-        help_text="Position in payout order (1=first payout)"
+        null=True, blank=True, help_text="Position in payout order (1=first payout)"
     )
-    
+
     # Contact for group communications
     phone_number = models.CharField(max_length=20, blank=True)
     alternate_phone = models.CharField(max_length=20, blank=True)
-    
+
     # Emergency contact
     emergency_contact_name = models.CharField(max_length=200, blank=True)
     emergency_contact_phone = models.CharField(max_length=20, blank=True)
-    
+
+    @property
+    def trust_score(self):
+        """
+        Calculate a reliability score (0-100) based on contribution history.
+        Deducts points for late payments or missed weeks.
+        """
+        contributions = self.contributions.filter(status="completed")
+        if not contributions.exists():
+            return 100.0  # New members start with high trust
+
+        total_count = contributions.count()
+        late_count = contributions.filter(is_late=True).count()
+
+        score = 100.0 - (
+            late_count / total_count * 50.0
+        )  # Max 50% penalty for lateness
+        return round(max(0.0, score), 1)
+
     class Meta:
-        unique_together = ('group', 'user')
-        ordering = ['payout_order']
-        verbose_name = 'Membership'
-        verbose_name_plural = 'Memberships'
-    
+        unique_together = ("group", "user")
+        ordering = ["payout_order"]
+        verbose_name = "Membership"
+        verbose_name_plural = "Memberships"
+
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.group.name}"
-    
+
     def is_active(self):
         """Check if membership is active."""
-        return self.status == 'active'
+        return self.status == "active"
 
 
 class Cycle(AuditableModel):
     """
     A single cycle of a mchezo group.
-    
+
     A cycle runs from the first contribution until all members
     have received their payout.
     """
+
     STATUS_CHOICES = [
-        ('draft', 'Draft'),
-        ('active', 'Active'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
+        ("draft", "Draft"),
+        ("active", "Active"),
+        ("completed", "Completed"),
+        ("cancelled", "Cancelled"),
     ]
-    
-    group = models.ForeignKey(
-        Group,
-        on_delete=models.CASCADE,
-        related_name='cycles'
-    )
-    
+
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="cycles")
+
     cycle_number = models.PositiveIntegerField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
-    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
+
     # Dates
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
-    
+
     # Payout tracking
     payouts_made = models.PositiveIntegerField(default=0)
     total_payouts = models.PositiveIntegerField(
-        default=0,
-        help_text="Total amount paid out this cycle"
+        default=0, help_text="Total amount paid out this cycle"
     )
-    
+
     # Settings
     notes = models.TextField(blank=True)
-    
+
     class Meta:
-        unique_together = ('group', 'cycle_number')
-        ordering = ['-cycle_number']
-        verbose_name = 'Cycle'
-        verbose_name_plural = 'Cycles'
-    
+        unique_together = ("group", "cycle_number")
+        ordering = ["-cycle_number"]
+        verbose_name = "Cycle"
+        verbose_name_plural = "Cycles"
+
     def __str__(self):
         return f"{self.group.name} - Cycle {self.cycle_number}"
-    
+
     def start_cycle(self):
         """Start this cycle."""
-        if self.status != 'draft':
+        if self.status != "draft":
             raise ValueError("Only draft cycles can be started")
-        self.status = 'active'
+        self.status = "active"
         self.start_date = timezone.now().date()
         self.save()
         return self
-    
+
     def complete_cycle(self):
         """Complete this cycle."""
-        if self.status != 'active':
+        if self.status != "active":
             raise ValueError("Only active cycles can be completed")
-        self.status = 'completed'
+        self.status = "completed"
         self.end_date = timezone.now().date()
         self.save()
         return self
-    
+
     def get_contribution_progress(self):
         """Get contribution progress for this cycle."""
-        total_expected = self.group.memberships.filter(
-            status='active'
-        ).count()
-        contributions = self.contributions.filter(
-            status='completed'
-        ).count()
+        total_expected = self.group.memberships.filter(status="active").count()
+        contributions = self.contributions.filter(status="completed").count()
         return {
-            'total': total_expected,
-            'made': contributions,
-            'remaining': total_expected - contributions
+            "total": total_expected,
+            "made": contributions,
+            "remaining": total_expected - contributions,
         }
-    
+
     def is_complete(self):
         """Check if cycle is complete."""
-        if self.status != 'active':
+        if self.status != "active":
             return True
-        return self.payouts_made >= self.group.memberships.filter(
-            status='active'
-        ).count()
-    
+        return (
+            self.payouts_made >= self.group.memberships.filter(status="active").count()
+        )
+
     def get_current_week(self):
         """
         Get the current week number for this cycle based on start date.
-        
+
         Returns:
             int: Current week number (1-indexed)
         """
         from datetime import timedelta
+
         if not self.start_date:
             return 1
         days_elapsed = (timezone.now().date() - self.start_date).days
         return max(1, (days_elapsed // 7) + 1)
-    
+
     def get_weeks_remaining(self, membership):
         """
         Get information about which weeks a member has paid for.
-        
+
         Args:
             membership: The membership to check
-            
+
         Returns:
             dict: Information about paid and remaining weeks
         """
         from django.db.models import Sum
         from django.db.models.functions import Coalesce
-        
+
         # Get total amount contributed per week for this member
-        contributions_by_week = membership.contributions.filter(
-            cycle=self,
-            status='completed'
-        ).values('contribution_week').annotate(
-            total=Sum('amount')
-        ).order_by('contribution_week')
-        
+        contributions_by_week = (
+            membership.contributions.filter(cycle=self, status="completed")
+            .values("contribution_week")
+            .annotate(total=Sum("amount"))
+            .order_by("contribution_week")
+        )
+
         paid_weeks = {}
         for c in contributions_by_week:
-            paid_weeks[c['contribution_week']] = float(c['total'])
-        
+            paid_weeks[c["contribution_week"]] = float(c["total"])
+
         # Get current expected week (based on payouts made)
         current_week = self.payouts_made + 1
         total_weeks = self.group.get_member_count()
-        
+
         return {
-            'paid_weeks': paid_weeks,
-            'current_week': current_week,
-            'total_weeks': total_weeks,
-            'contribution_amount': self.group.contribution_amount
+            "paid_weeks": paid_weeks,
+            "current_week": current_week,
+            "total_weeks": total_weeks,
+            "contribution_amount": self.group.contribution_amount,
         }
-    
+
     def has_completed_week_payment(self, membership, week):
         """
         Check if a member has fully paid for a specific week.
-        
+
         Args:
             membership: The membership to check
             week: The week number to check
-            
+
         Returns:
             bool: True if week is fully paid
         """
         from django.db.models import Sum
-        
-        total_paid = membership.contributions.filter(
-            cycle=self,
-            contribution_week=week,
-            status='completed'
-        ).aggregate(total=Sum('amount'))['total'] or 0
-        
+
+        total_paid = (
+            membership.contributions.filter(
+                cycle=self, contribution_week=week, status="completed"
+            ).aggregate(total=Sum("amount"))["total"]
+            or 0
+        )
+
         return float(total_paid) >= float(self.group.contribution_amount)
 
 
 class Contribution(AuditableModel):
     """
     A contribution made by a member in a cycle.
-    
+
     All contributions must be recorded manually.
     Supports incremental payments and bulk payments for multiple weeks.
     """
+
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('completed', 'Completed'),
-        ('failed', 'Failed'),
-        ('refunded', 'Refunded'),
+        ("pending", "Pending"),
+        ("completed", "Completed"),
+        ("failed", "Failed"),
+        ("refunded", "Refunded"),
     ]
-    
+
     cycle = models.ForeignKey(
-        Cycle,
-        on_delete=models.CASCADE,
-        related_name='contributions'
+        Cycle, on_delete=models.CASCADE, related_name="contributions"
     )
     membership = models.ForeignKey(
-        Membership,
-        on_delete=models.CASCADE,
-        related_name='contributions'
+        Membership, on_delete=models.CASCADE, related_name="contributions"
     )
-    
+
     # Contribution details
     amount = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        validators=[MinValueValidator(0.01)]
+        max_digits=15, decimal_places=2, validators=[MinValueValidator(0.01)]
     )
-    currency = models.CharField(max_length=3, default='TZS')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='completed')
-    
+    # Fines and Lateness
+    is_late = models.BooleanField(default=False)
+    fine_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    social_fund_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+
+    currency = models.CharField(max_length=3, default="TZS")
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default="completed"
+    )
+
     # Week tracking for flexible payments
     # Week 1 = first week of cycle, Week 2 = second week, etc.
     # Can be used to pay for future weeks in advance or track incremental payments
     contribution_week = models.PositiveIntegerField(
         default=1,
-        help_text="Which week/period this contribution is for (1=first week, 2=second week, etc.)"
+        help_text="Which week/period this contribution is for (1=first week, 2=second week, etc.)",
     )
-    
+
     # Timing
     contribution_date = models.DateField(default=timezone.now)
     contribution_time = models.TimeField(default=timezone.now)
-    
+
     # Payment details
     payment_method = models.CharField(max_length=50)
     reference_number = models.CharField(max_length=100, blank=True)
     notes = models.TextField(blank=True)
-    
+
     class Meta:
-        ordering = ['contribution_date', 'contribution_time']
-        verbose_name = 'Contribution'
-        verbose_name_plural = 'Contributions'
-    
+        ordering = ["contribution_date", "contribution_time"]
+        verbose_name = "Contribution"
+        verbose_name_plural = "Contributions"
+
     def __str__(self):
         return f"{self.membership.user.get_full_name()} - {self.amount} ({self.cycle})"
 
@@ -365,64 +386,76 @@ class Contribution(AuditableModel):
 class Payout(AuditableModel):
     """
     A payout to a member in a cycle.
-    
+
     Each member receives exactly one payout per cycle.
     """
+
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('scheduled', 'Scheduled'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
+        ("pending", "Pending"),
+        ("scheduled", "Scheduled"),
+        ("completed", "Completed"),
+        ("cancelled", "Cancelled"),
     ]
-    
-    cycle = models.ForeignKey(
-        Cycle,
-        on_delete=models.CASCADE,
-        related_name='payouts'
-    )
+
+    cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE, related_name="payouts")
     membership = models.ForeignKey(
-        Membership,
-        on_delete=models.CASCADE,
-        related_name='payouts'
+        Membership, on_delete=models.CASCADE, related_name="payouts"
     )
-    
+
     # Payout details
     amount = models.DecimalField(
+        max_digits=15, decimal_places=2, validators=[MinValueValidator(0.01)]
+    )
+    # Bidding logic
+    bid_amount = models.DecimalField(
         max_digits=15,
         decimal_places=2,
-        validators=[MinValueValidator(0.01)]
+        default=0,
+        help_text="Amount bid (discount offered) to get this payout",
     )
-    currency = models.CharField(max_length=3, default='TZS')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    
+    net_amount = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        default=0,
+        help_text="Actual amount received (Amount - Bid)",
+    )
+
+    currency = models.CharField(max_length=3, default="TZS")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+
     # Timing
     scheduled_date = models.DateField()
     completed_date = models.DateField(blank=True, null=True)
-    
+
     # Payment details
     payment_method = models.CharField(max_length=50)
     reference_number = models.CharField(max_length=100, blank=True)
-    
+
     # Position
     payout_order = models.PositiveIntegerField(
         help_text="Order in which payout was received"
     )
-    
+
     # Notes
     notes = models.TextField(blank=True)
-    
+
     class Meta:
-        unique_together = ('cycle', 'membership')
-        ordering = ['payout_order']
-        verbose_name = 'Payout'
-        verbose_name_plural = 'Payouts'
-    
+        unique_together = ("cycle", "membership")
+        ordering = ["payout_order"]
+        verbose_name = "Payout"
+        verbose_name_plural = "Payouts"
+
     def __str__(self):
         return f"{self.membership.user.get_full_name()} - {self.amount} ({self.cycle})"
-    
+
+    def save(self, *args, **kwargs):
+        if not self.net_amount:
+            self.net_amount = self.amount - self.bid_amount
+        super().save(*args, **kwargs)
+
     def complete_payout(self):
         """Mark payout as completed."""
-        self.status = 'completed'
+        self.status = "completed"
         self.completed_date = timezone.now().date()
         self.save()
         return self

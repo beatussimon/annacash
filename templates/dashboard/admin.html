@@ -53,7 +53,7 @@
         <div class="anna-kpi-card">
             <div class="anna-kpi-card-header">
                 <span class="anna-kpi-label">Mchezo Groups</span>
-                <div class="anna-kpi-icon" style="background: #fee2e2; color: #dc2626;">
+                <div class="anna-kpi-icon anna-kpi-icon-danger">
                     <i class="bi bi-people"></i>
                 </div>
             </div>
@@ -94,6 +94,26 @@
                         <div class="anna-transaction-content">
                             <div class="anna-transaction-title">Wakala Management</div>
                             <div class="anna-transaction-meta">Manage wakala businesses</div>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="anna-card mt-4">
+            <div class="anna-card-header">
+                <h5 class="anna-card-title">
+                    <i class="bi bi-people me-2"></i> Mchezo Management
+                </h5>
+            </div>
+            <div class="anna-card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'mchezo:create_group' %}" class="anna-transaction-item list-group-item list-group-item-action">
+                        <i class="bi bi-plus-circle anna-transaction-icon anna-transaction-icon-deposit"></i>
+                        <div class="anna-transaction-content">
+                            <div class="anna-transaction-title">Create Mchezo Group</div>
+                            <div class="anna-transaction-meta">Set up a new rotating savings circle</div>
                         </div>
                         <i class="bi bi-chevron-right text-muted"></i>
                     </a>

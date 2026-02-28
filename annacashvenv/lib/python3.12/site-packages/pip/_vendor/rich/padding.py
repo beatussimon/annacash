@@ -12,7 +12,6 @@ from .measure import Measurement
 from .style import Style
 from .segment import Segment
 
-
 PaddingDimensions = Union[int, Tuple[int], Tuple[int, int], Tuple[int, int, int, int]]
 
 

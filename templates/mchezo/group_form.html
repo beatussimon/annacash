@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load permissions %}
+
+{% block title %}{{ page_title }} - ANNA{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+        <div class="anna-card">
+            <div class="anna-card-header px-4 py-3 border-bottom">
+                <h5 class="mb-0">
+                    <i class="bi bi-plus-circle text-primary me-2"></i> {{ page_title }}
+                </h5>
+            </div>
+            <form method="post" class="anna-card-body">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="anna-alert anna-alert-danger mb-4">
+                    {% for error in form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="anna-alert anna-alert-info mb-4">
+                    <i class="bi bi-info-circle anna-alert-icon"></i>
+                    <div class="anna-alert-content">
+                        <p class="mb-0">Creating a new Mchezo group will set you as the primary administrator. You can add members and start the first cycle once the group is created.</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        {% include "components/form_field.html" with field=form.name %}
+                    </div>
+                    <div class="col-md-12">
+                        {% include "components/form_field.html" with field=form.description %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        {% include "components/form_field.html" with field=form.contribution_amount %}
+                    </div>
+                    <div class="col-md-6">
+                        {% include "components/form_field.html" with field=form.contribution_frequency %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        {% include "components/form_field.html" with field=form.contribution_day %}
+                    </div>
+                    <div class="col-md-6">
+                        {% include "components/form_field.html" with field=form.max_members %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        {% include "components/form_field.html" with field=form.payout_order_method %}
+                    </div>
+                    <div class="col-md-6">
+                        {% include "components/form_field.html" with field=form.is_open %}
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{% url 'dashboard:admin' %}" class="anna-btn anna-btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="anna-btn anna-btn-primary">
+                        <i class="bi bi-check"></i> Create Group
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

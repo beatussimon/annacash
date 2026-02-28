@@ -116,7 +116,7 @@ Financial-grade, trustworthy, professional design tokens.
 }
 
 /* Dark Mode Colors */
-[data-theme="dark"] {
+[data-bs-theme="dark"] {
   --anna-bg-primary: #0f172a;
   --anna-bg-secondary: #1e293b;
   --anna-bg-tertiary: #334155;
@@ -179,6 +179,12 @@ Financial-grade, trustworthy, professional design tokens.
 
 .anna-card:hover {
   box-shadow: var(--anna-shadow);
+  border-color: var(--anna-border-dark);
+}
+
+[data-bs-theme="dark"] .anna-card:hover {
+  border-color: var(--anna-primary);
+  box-shadow: 0 0 0 1px var(--anna-primary), var(--anna-shadow-md);
 }
 
 .anna-card-interactive {

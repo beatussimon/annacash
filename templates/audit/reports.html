@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load permissions %}
 
 {% block title %}System Reports - ANNA{% endblock %}
 
@@ -17,12 +18,68 @@
     </div>
 </div>
 
-<div class="anna-card">
-    <div class="anna-card-body">
-        <div class="anna-empty-state py-8">
-            <i class="bi bi-graph-up anna-empty-state-icon"></i>
-            <h6 class="anna-empty-state-title">System Statistics</h6>
-            <p class="anna-empty-state-message">Detailed reports and analytics coming soon.</p>
+<div class="row g-4 mb-4">
+    <!-- User Stats -->
+    <div class="col-12 col-md-4">
+        <div class="anna-card h-100">
+            <div class="anna-card-header">
+                <h6 class="mb-0"><i class="bi bi-people text-primary"></i> Users</h6>
+            </div>
+            <div class="anna-card-body">
+                <h3 class="anna-amount">{{ total_users }}</h3>
+                <span class="text-muted small">Total Registered</span>
+                <hr>
+                <h4 class="text-success">{{ active_users }}</h4>
+                <span class="text-muted small">Active Accounts</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wakala Stats -->
+    <div class="col-12 col-md-4">
+        <div class="anna-card h-100">
+            <div class="anna-card-header">
+                <h6 class="mb-0"><i class="bi bi-shop text-success"></i> Wakala Operations</h6>
+            </div>
+            <div class="anna-card-body">
+                <h3 class="anna-amount">{{ total_wakalas }}</h3>
+                <span class="text-muted small">Active Branches</span>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="anna-amount text-success">{% format_tzs today_txn_volume %}</h5>
+                        <span class="text-muted small">Today's Volume</span>
+                    </div>
+                    <div class="text-end">
+                        <h5 class="anna-amount">{% format_tzs monthly_txn_volume %}</h5>
+                        <span class="text-muted small">Month Volume</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mchezo Stats -->
+    <div class="col-12 col-md-4">
+        <div class="anna-card h-100">
+            <div class="anna-card-header">
+                <h6 class="mb-0"><i class="bi bi-circle-square text-warning"></i> Mchezo Groups</h6>
+            </div>
+            <div class="anna-card-body">
+                <h3 class="anna-amount">{{ total_groups }}</h3>
+                <span class="text-muted small">Active Groups</span>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="anna-amount text-success">{% format_tzs total_contributions %}</h5>
+                        <span class="text-muted small">All Time Collections</span>
+                    </div>
+                    <div class="text-end">
+                        <h5 class="anna-amount text-danger">{% format_tzs total_payouts %}</h5>
+                        <span class="text-muted small">All Time Payouts</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

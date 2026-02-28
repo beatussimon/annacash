@@ -4,7 +4,6 @@ import datetime
 import sys
 import struct
 
-
 PY2 = sys.version_info[0] == 2
 
 if PY2:

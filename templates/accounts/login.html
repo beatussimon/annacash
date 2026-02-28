@@ -6,7 +6,7 @@
 <div class="row justify-content-center">
     <div class="col-md-5">
         <div class="card shadow">
-            <div class="card-header bg-white text-center py-4">
+            <div class="card-header bg-transparent text-center py-4">
                 <h3 class="mb-0">
                     <i class="bi bi-cash-stack text-primary"></i> ANNA
                 </h3>
@@ -17,46 +17,26 @@
                     {% csrf_token %}
                     
                     {% if form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {{ form.non_field_errors }}
+                    <div class="anna-alert anna-alert-danger mb-4">
+                        {% for error in form.non_field_errors %}
+                        <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
                     </div>
                     {% endif %}
                     
-                    <div class="mb-3">
-                        <label for="id_username" class="form-label">Barua pepe</label>
-                        <input type="email" name="username" id="id_username" 
-                               class="form-control{% if form.username.errors %}is-invalid{% endif %}"
-                               required autofocus>
-                        {% if form.username.errors %}
-                        <div class="invalid-feedback">
-                            {{ form.username.errors }}
-                        </div>
-                        {% endif %}
-                    </div>
+                    {% include "components/form_field.html" with field=form.username %}
+                    {% include "components/form_field.html" with field=form.password %}
                     
-                    <div class="mb-3">
-                        <label for="id_password" class="form-label">Nenosiri</label>
-                        <input type="password" name="password" id="id_password"
-                               class="form-control{% if form.password.errors %}is-invalid{% endif %}"
-                               required>
-                        {% if form.password.errors %}
-                        <div class="invalid-feedback">
-                            {{ form.password.errors }}
-                        </div>
-                        {% endif %}
-                    </div>
+                    {% if form.remember %}
+                        {% include "components/form_field.html" with field=form.remember %}
+                    {% endif %}
                     
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" name="remember" id="id_remember" class="form-check-input">
-                        <label for="id_remember" class="form-check-label">Nikumbuke</label>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-anna w-100 py-2">
-                        <i class="bi bi-box-arrow-in-right"></i> Ingia
+                    <button type="submit" class="anna-btn anna-btn-primary w-100 py-3 mt-2">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Ingia Sasa
                     </button>
                 </form>
             </div>
-            <div class="card-footer bg-white text-center py-3">
+            <div class="card-footer bg-transparent text-center py-3">
                 <a href="#" class="text-muted">Umesahau nenosiri?</a>
             </div>
         </div>

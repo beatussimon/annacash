@@ -25,34 +25,26 @@
                 
                 {# Day Summary #}
                 <div class="anna-alert anna-alert-info mb-4">
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-6">
-                            <small class="text-muted">Opening Balance</small>
+                            <small class="text-muted d-block uppercase small fw-bold">Opening Total</small>
                             <div class="fw-bold">{% format_tzs open_day.opening_balance %}</div>
+                            <div class="small text-muted" style="font-size: 0.7rem;">
+                                C: {% format_tzs open_day.opening_cash %} | F: {% format_tzs open_day.opening_float %}
+                            </div>
                         </div>
                         <div class="col-6">
-                            <small class="text-muted">Computed Balance</small>
+                            <small class="text-muted d-block uppercase small fw-bold">Computed Total</small>
                             <div class="fw-bold">{% format_tzs computed_balance %}</div>
+                            <div class="small text-muted" style="font-size: 0.7rem;">
+                                C: {% format_tzs computed_cash %} | F: {% format_tzs computed_float %}
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 {% for field in form %}
-                <div class="anna-form-group">
-                    <label class="anna-form-label" for="{{ field.id_for_label }}">
-                        {{ field.label }}
-                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-                    </label>
-                    {{ field }}
-                    
-                    {% if field.help_text %}
-                    <small class="text-muted">{{ field.help_text }}</small>
-                    {% endif %}
-                    
-                    {% for error in field.errors %}
-                    <div class="anna-form-error">{{ error }}</div>
-                    {% endfor %}
-                </div>
+                    {% include "components/form_field.html" with field=field %}
                 {% endfor %}
                 
                 <div class="anna-alert anna-alert-warning mb-4">

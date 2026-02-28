@@ -76,7 +76,9 @@ class LayoutSlice:
         """
 
         def wrap_object(layout_object, j):
-            layout_object.fields[j] = self.wrapped_object(LayoutClass, layout_object.fields[j], *args, **kwargs)
+            layout_object.fields[j] = self.wrapped_object(
+                LayoutClass, layout_object.fields[j], *args, **kwargs
+            )
 
         self.pre_map(wrap_object)
 
@@ -89,7 +91,9 @@ class LayoutSlice:
 
         def wrap_object_once(layout_object, j):
             if not isinstance(layout_object, LayoutClass):
-                layout_object.fields[j] = self.wrapped_object(LayoutClass, layout_object.fields[j], *args, **kwargs)
+                layout_object.fields[j] = self.wrapped_object(
+                    LayoutClass, layout_object.fields[j], *args, **kwargs
+                )
 
         self.pre_map(wrap_object_once)
 
@@ -111,7 +115,9 @@ class LayoutSlice:
                     del self.layout.fields[i]
 
         elif isinstance(self.slice, list):
-            raise DynamicError("wrap_together doesn't work with filter, only with [] operator")
+            raise DynamicError(
+                "wrap_together doesn't work with filter, only with [] operator"
+            )
 
     def map(self, function):
         """
@@ -133,7 +139,9 @@ class LayoutSlice:
                     layout_object = layout_object.fields[i]
 
                 # If update_attrs is applied to a string, we call to its wrapping layout object
-                if function.__name__ == "update_attrs" and isinstance(layout_object, str):
+                if function.__name__ == "update_attrs" and isinstance(
+                    layout_object, str
+                ):
                     function(previous_layout_object)
                 else:
                     function(layout_object)

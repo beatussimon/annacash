@@ -24,7 +24,7 @@
     {# User Info Card #}
     <div class="col-lg-4 mb-4">
         <div class="anna-card">
-            <div class="anna-card-header bg-white">
+            <div class="anna-card-header">
                 <h5 class="mb-0">
                     <i class="bi bi-person text-primary"></i> Account Information
                 </h5>
@@ -51,7 +51,7 @@
                             {% if user.is_superuser %}
                                 <span class="badge bg-danger">Superuser</span>
                             {% elif user.is_staff %}
-                                <span class="badge bg-warning text-dark">Staff</span>
+                                <span class="badge bg-warning text-white">Staff</span>
                             {% else %}
                                 <span class="badge bg-secondary">User</span>
                             {% endif %}
@@ -83,7 +83,7 @@
     {# Profile Settings Form #}
     <div class="col-lg-8 mb-4">
         <div class="anna-card">
-            <div class="anna-card-header bg-white">
+            <div class="anna-card-header">
                 <h5 class="mb-0">
                     <i class="bi bi-gear text-primary"></i> Profile Settings
                 </h5>
@@ -186,7 +186,7 @@
         
         {# Password Change Link #}
         <div class="anna-card mt-4">
-            <div class="anna-card-header bg-white">
+            <div class="anna-card-header">
                 <h5 class="mb-0">
                     <i class="bi bi-shield-lock text-primary"></i> Security
                 </h5>

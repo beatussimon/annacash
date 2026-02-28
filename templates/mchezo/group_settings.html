@@ -59,6 +59,16 @@
                             </select>
                         </div>
                         <div class="col-md-6">
+                            <label class="anna-form-label" for="id_social_fund_contribution">Social Fund (Mfuko wa Jamii) *</label>
+                            <input type="number" name="social_fund_contribution" id="id_social_fund_contribution" class="anna-form-input" value="{{ group.social_fund_contribution|default:0 }}" required min="0">
+                            <small class="text-muted">Fixed amount per period.</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="anna-form-label" for="id_late_fine_amount">Late Fine Amount (Faini) *</label>
+                            <input type="number" name="late_fine_amount" id="id_late_fine_amount" class="anna-form-input" value="{{ group.late_fine_amount|default:0 }}" required min="0">
+                            <small class="text-muted">Standard fine for late payments.</small>
+                        </div>
+                        <div class="col-md-6">
                             <label class="anna-form-label" for="id_max_members">Max Members *</label>
                             <input type="number" name="max_members" id="id_max_members" class="anna-form-input" value="{{ group.max_members }}" required min="2" max="100">
                         </div>

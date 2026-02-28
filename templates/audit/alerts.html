@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load permissions %}
 
 {% block title %}System Alerts - ANNA{% endblock %}
 
@@ -6,9 +7,9 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
     <div>
         <h4 class="mb-1">
-            <i class="bi bi-exclamation-triangle text-warning"></i> System Alerts
+            <i class="bi bi-bell text-danger"></i> System Alerts
         </h4>
-        <p class="text-muted mb-0">Important notifications and warnings</p>
+        <p class="text-muted mb-0">Actionable anomalies and warnings</p>
     </div>
     <div class="d-flex gap-2 mt-3 mt-md-0">
         <a href="{% url 'dashboard:admin' %}" class="anna-btn anna-btn-secondary">
@@ -17,12 +18,58 @@
     </div>
 </div>
 
-<div class="anna-card">
-    <div class="anna-card-body">
-        <div class="anna-empty-state py-8">
-            <i class="bi bi-bell anna-empty-state-icon"></i>
-            <h6 class="anna-empty-state-title">No Alerts</h6>
-            <p class="anna-empty-state-message">System alerts will appear here when there are issues to address.</p>
+<div class="row g-4 mb-4">
+    <!-- Wakala Discrepancies -->
+    <div class="col-12 col-lg-6">
+        <div class="anna-card h-100 border-danger">
+            <div class="anna-card-header bg-danger text-white">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Wakala Discrepancies</h6>
+            </div>
+            <div class="anna-card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for day in discrepancy_days %}
+                    <a href="{% url 'admin:wakala_financialday_change' day.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start py-3">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">{{ day.wakala.name }}</div>
+                            <small class="text-muted">{{ day.date|date:"M d, Y" }} • Closed by {{ day.closed_by.get_full_name|default:day.closed_by.email }}</small>
+                        </div>
+                        <span class="badge bg-danger rounded-pill">{% format_tzs day.discrepancy %}</span>
+                    </a>
+                    {% empty %}
+                    <div class="p-4 text-center text-success">
+                        <i class="bi bi-check-circle fs-3 d-block mb-2"></i>
+                        No balancing discrepancies found.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Late Mchezo Contributions -->
+    <div class="col-12 col-lg-6">
+        <div class="anna-card h-100 border-warning">
+            <div class="anna-card-header bg-warning text-white">
+                <h6 class="mb-0"><i class="bi bi-clock-history"></i> Late Mchezo Contributions</h6>
+            </div>
+            <div class="anna-card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for contrib in late_contributions %}
+                    <a href="{% url 'admin:mchezo_contribution_change' contrib.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start py-3">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">{{ contrib.membership.user.get_full_name|default:contrib.membership.user.email }}</div>
+                            <small class="text-muted">{{ contrib.cycle.group.name }} • Week {{ contrib.contribution_week }}</small>
+                        </div>
+                        <span class="badge bg-warning text-white rounded-pill">Late (Fined: {% format_tzs contrib.fine_amount %})</span>
+                    </a>
+                    {% empty %}
+                    <div class="p-4 text-center text-success">
+                        <i class="bi bi-check-circle fs-3 d-block mb-2"></i>
+                        No recent late contributions.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
 </div>

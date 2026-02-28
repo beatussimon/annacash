@@ -1,0 +1,45 @@
+{% comment %}
+  Reusable snippet for rendering professional ANNA form fields.
+  Usage: {% include 'components/form_field.html' with field=form.field_name %}
+{% endcomment %}
+
+<div class="anna-form-group mb-4 {% if field.errors %}anna-form-group-error{% endif %}">
+    {% if field.field.widget.input_type != 'checkbox' and field.field.widget.input_type != 'radio' %}
+        <label class="anna-form-label" for="{{ field.id_for_label }}">
+            {{ field.label }}
+            {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+        </label>
+    {% endif %}
+
+    {% if field.field.widget.input_type == 'checkbox' %}
+        <div class="anna-form-check">
+            {{ field }}
+            <label class="anna-form-label mb-0 cursor-pointer" for="{{ field.id_for_label }}">
+                {{ field.label }}
+                {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+            </label>
+        </div>
+    {% elif field.field.widget.input_type == 'radio' %}
+        <div class="anna-form-radio-group">
+            <label class="anna-form-label d-block mb-2">{{ field.label }}</label>
+            {{ field }}
+        </div>
+    {% else %}
+        {{ field }}
+    {% endif %}
+
+    {% if field.help_text %}
+        <div class="anna-form-text text-muted small mt-1">{{ field.help_text|safe }}</div>
+    {% endif %}
+
+    {% if field.errors %}
+        <div class="anna-form-error mt-2">
+            {% for error in field.errors %}
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

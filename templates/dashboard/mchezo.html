@@ -93,34 +93,37 @@
     <div class="col-6 col-md-3">
         <div class="anna-kpi-card">
             <div class="anna-kpi-card-header">
-                <span class="anna-kpi-label">Members</span>
+                <span class="anna-kpi-label">Group Health</span>
+                <div class="anna-kpi-icon {% if health_score >= 90 %}anna-kpi-icon-success{% else %}anna-kpi-icon-warning{% endif %}">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
+            </div>
+            <div class="anna-kpi-value">{{ health_score }}%</div>
+            <div class="small text-muted" style="font-size: 0.7rem;">Collection rate to date</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="anna-kpi-card">
+            <div class="anna-kpi-card-header">
+                <span class="anna-kpi-label">Social Fund</span>
                 <div class="anna-kpi-icon anna-kpi-icon-primary">
-                    <i class="bi bi-people"></i>
+                    <i class="bi bi-shield-check"></i>
                 </div>
             </div>
-            <div class="anna-kpi-value">{{ group.memberships.count|default:"0" }}</div>
+            <div class="anna-kpi-value">{% format_tzs social_fund_balance %}</div>
+            <div class="small text-muted" style="font-size: 0.7rem;">Mfuko wa Jamii (Balance)</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="anna-kpi-card">
             <div class="anna-kpi-card-header">
-                <span class="anna-kpi-label">Contributions</span>
-                <div class="anna-kpi-icon anna-kpi-icon-success">
-                    <i class="bi bi-cash-coin"></i>
+                <span class="anna-kpi-label">Late Payments</span>
+                <div class="anna-kpi-icon {% if late_count > 0 %}anna-kpi-icon-danger{% else %}anna-kpi-icon-success{% endif %}">
+                    <i class="bi bi-clock-history"></i>
                 </div>
             </div>
-            <div class="anna-kpi-value">{{ contributions_count|default:"0" }}</div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="anna-kpi-card">
-            <div class="anna-kpi-card-header">
-                <span class="anna-kpi-label">Payouts Made</span>
-                <div class="anna-kpi-icon anna-kpi-icon-warning">
-                    <i class="bi bi-gift"></i>
-                </div>
-            </div>
-            <div class="anna-kpi-value">{{ current_cycle.payouts_made|default:"0" }}</div>
+            <div class="anna-kpi-value">{{ late_count }}</div>
+            <div class="small text-muted" style="font-size: 0.7rem;">Contributions after deadline</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
@@ -137,6 +140,63 @@
                 {% else %}
                 -
                 {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Analytics Section #}
+<div class="row g-4 mb-4">
+    <div class="col-lg-12">
+        <div class="anna-card">
+            <div class="anna-card-header">
+                <h5 class="anna-card-title">
+                    <i class="bi bi-trophy me-2"></i> Reliability Leaderboard (Trust Scores)
+                </h5>
+            </div>
+            <div class="anna-card-body p-0">
+                <div class="table-responsive">
+                    <table class="anna-table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Member</th>
+                                <th>Trust Score</th>
+                                <th>Reliability Bar</th>
+                                <th>Payment History</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in reliability_rank %}
+                            <tr>
+                                <td>
+                                    <span class="badge {% if forloop.counter <= 3 %}bg-warning{% else %}bg-secondary{% endif %}">
+                                        #{{ forloop.counter }}
+                                    </span>
+                                </td>
+                                <td><strong>{{ member.user.get_full_name }}</strong></td>
+                                <td>
+                                    <span class="fw-bold {% if member.trust_score >= 90 %}text-success{% elif member.trust_score >= 70 %}text-warning{% else %}text-danger{% endif %}">
+                                        {{ member.trust_score }}%
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 10px; width: 100px;">
+                                        <div class="progress-bar {% if member.trust_score >= 90 %}bg-success{% elif member.trust_score >= 70 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                             role="progressbar" style="width: {{ member.trust_score }}%" 
+                                             aria-valuenow="{{ member.trust_score }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ member.contributions.count }} total • {{ member.contributions.filter.is_late.count|default:0 }} late
+                                    </small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -196,13 +256,23 @@
                                     <span class="badge bg-secondary">{{ membership.status|title }}</span>
                                     {% endif %}
                                 </td>
-                                {% if can_manage_members %}
                                 <td>
-                                    <a href="{% url 'mchezo:edit_member' group_id=group.id membership_id=membership.id %}" class="anna-btn anna-btn-sm anna-btn-icon" title="Edit">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
+                                    <div class="d-flex gap-1">
+                                        {% if can_record_contrib and current_cycle and current_cycle.status == 'active' %}
+                                        <button type="button" class="anna-btn anna-btn-sm anna-btn-success anna-btn-icon" 
+                                                data-bs-toggle="modal" data-bs-target="#contributionModal" 
+                                                onclick="document.getElementById('contribution_member').value='{{ membership.id }}'"
+                                                title="Record Contribution">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </button>
+                                        {% endif %}
+                                        {% if can_manage_members %}
+                                        <a href="{% url 'mchezo:edit_member' group_id=group.id membership_id=membership.id %}" class="anna-btn anna-btn-sm anna-btn-icon" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
                                 </td>
-                                {% endif %}
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -229,10 +299,28 @@
         <div class="anna-card mb-4">
             <div class="anna-card-header">
                 <h5 class="anna-card-title">
-                    <i class="bi bi-gear me-2"></i> Group Actions
+                    <i class="bi bi-gear me-2"></i> Quick Settings
                 </h5>
             </div>
             <div class="anna-card-body">
+                {% if can_manage_members %}
+                <div class="d-grid gap-2">
+                    <a href="{% url 'mchezo:settings' group_id=group.id %}#id_max_members" class="anna-btn anna-btn-secondary text-start">
+                        <i class="bi bi-person-plus me-2"></i> Extend Max Members ({{ group.max_members }})
+                    </a>
+                    <a href="{% url 'mchezo:settings' group_id=group.id %}#id_contribution_amount" class="anna-btn anna-btn-secondary text-start">
+                        <i class="bi bi-cash-coin me-2"></i> Change Amount ({% format_tzs group.contribution_amount %})
+                    </a>
+                    <a href="{% url 'mchezo:settings' group_id=group.id %}" class="anna-btn anna-btn-primary text-start">
+                        <i class="bi bi-gear-wide-connected me-2"></i> Full Group Settings
+                    </a>
+                </div>
+                {% else %}
+                <p class="text-muted small mb-0">Only administrators can change group settings.</p>
+                {% endif %}
+
+                <hr class="my-3">
+
                 {% if current_cycle %}
                     {% if current_cycle.status == 'active' %}
                         {% if can_close_cycle %}
@@ -243,11 +331,11 @@
                         <div class="anna-alert anna-alert-info mb-0">
                             <i class="bi bi-info-circle anna-alert-icon"></i>
                             <div class="anna-alert-content">
-                                <p class="anna-alert-message mb-0">Cycle is active. Contact admin to close </div>
+                                <p class="anna-alert-message mb-0">Cycle is active. Contact admin to close.</p>
+                            </div>
                         </div>
                         {% endif %}
-                   .</p>
-                            {% else %}
+                    {% else %}
                     <div class="anna-alert anna-alert-success mb-0">
                         <i class="bi bi-check-circle anna-alert-icon"></i>
                         <div class="anna-alert-content">
@@ -296,11 +384,11 @@
             </div>
         </div>
         
-        {# Group Settings #}
+        {# Group Info #}
         <div class="anna-card">
             <div class="anna-card-header">
                 <h5 class="anna-card-title">
-                    <i class="bi bi-info-circle me-2"></i> Group Settings
+                    <i class="bi bi-info-circle me-2"></i> Group Status
                 </h5>
             </div>
             <div class="anna-card-body">
@@ -309,12 +397,8 @@
                     <div class="fw-medium">{% format_tzs group.contribution_amount %} • {{ group.contribution_frequency|title }}</div>
                 </div>
                 <div class="mb-2">
-                    <small class="text-muted">Max Members</small>
-                    <div class="fw-medium">{{ group.max_members }}</div>
-                </div>
-                <div class="mb-2">
-                    <small class="text-muted">Payout Method</small>
-                    <div class="fw-medium">{{ group.get_payout_order_method_display }}</div>
+                    <small class="text-muted">Members</small>
+                    <div class="fw-medium">{{ group.get_member_count }} / {{ group.max_members }}</div>
                 </div>
                 <div>
                     <small class="text-muted">Status</small>
@@ -349,32 +433,46 @@
             </div>
             <form action="{% url 'mchezo:contribution_create' group_id=group.id %}" method="post">
                 {% csrf_token %}
+                <input type="hidden" name="weeks_to_pay" value="1">
                 <div class="modal-body">
                     <div class="anna-form-group">
                         <label class="anna-form-label" for="contribution_member">Member *</label>
-                        <select name="membership_id" id="contribution_member" class="anna-form-input" required>
+                        <select name="membership" id="contribution_member" class="anna-form-input" required>
                             <option value="">Select member...</option>
                             {% for membership in memberships %}
                             <option value="{{ membership.id }}">{{ membership.user.get_full_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="anna-form-group">
-                        <label class="anna-form-label" for="contribution_amount">Amount (TZS)</label>
-                        <input type="number" name="amount" id="contribution_amount" class="anna-form-input" value="{{ group.contribution_amount }}" readonly>
-                        <small class="text-muted">Fixed contribution amount</small>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="anna-form-group">
+                                <label class="anna-form-label" for="contribution_amount">Amount (TZS)</label>
+                                <input type="number" name="amount" id="contribution_amount" class="anna-form-input" value="{{ group.contribution_amount }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="anna-form-group">
+                                <label class="anna-form-label" for="contribution_week">Week</label>
+                                <select name="contribution_week" id="contribution_week" class="anna-form-input" required>
+                                    {% for w in week_range %}
+                                    <option value="{{ w }}" {% if w == current_cycle.get_current_week %}selected{% endif %}>Week {{ w }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="anna-form-group">
                         <label class="anna-form-label" for="contribution_method">Payment Method</label>
                         <select name="payment_method" id="contribution_method" class="anna-form-input">
                             <option value="cash">Cash</option>
-                            <option value="mobile_money">Mobile Money</option>
+                            <option value="mobile_money" selected>Mobile Money</option>
                             <option value="bank_transfer">Bank Transfer</option>
                         </select>
                     </div>
                     <div class="anna-form-group">
                         <label class="anna-form-label" for="contribution_reference">Reference Number</label>
-                        <input type="text" name="reference_number" id="contribution_reference" class="anna-form-input">
+                        <input type="text" name="reference_number" id="contribution_reference" class="anna-form-input" placeholder="e.g. MPESA ID">
                     </div>
                     <div class="anna-form-group mb-0">
                         <label class="anna-form-label" for="contribution_notes">Notes</label>

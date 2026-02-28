@@ -45,21 +45,7 @@
                 </div>
                 
                 {% for field in form %}
-                <div class="anna-form-group">
-                    <label class="anna-form-label" for="{{ field.id_for_label }}">
-                        {{ field.label }}
-                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-                    </label>
-                    {{ field }}
-                    
-                    {% if field.help_text %}
-                    <small class="text-muted">{{ field.help_text }}</small>
-                    {% endif %}
-                    
-                    {% for error in field.errors %}
-                    <div class="anna-form-error">{{ error }}</div>
-                    {% endfor %}
-                </div>
+                    {% include "components/form_field.html" with field=field %}
                 {% endfor %}
                 
                 <div class="d-flex justify-content-end gap-2 mt-4">
